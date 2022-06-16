@@ -141,7 +141,26 @@ class OpenAI(commands.Cog):
 
             await ctx.send(content=res.strip().replace("\n", ""))
 
-          
+    @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.member)
+    async def fact(self, ctx, *, topic=None):
+        """Tells you a random fact about given topic."""
+
+        prompt = "Tell me a random fact" if not topic else f"Tell me a fact about {topic}."
+
+        response = openai.Completion.create(
+            engine="text-davinci-002",
+            prompt=f"{prompt}\nfact:",
+            temperature=0.7,
+            max_tokens=60,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0,
+            stop=["fact:"]
+        )
+
+        r = response["choices"][0]["text"]
+        await ctx.send(content=r)     
 
     @commands.command(enabled=False)
     @commands.cooldown(1, 30, commands.BucketType.user)
