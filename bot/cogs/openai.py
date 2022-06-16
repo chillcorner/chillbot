@@ -61,7 +61,7 @@ class OpenAI(commands.Cog):
         if not clean_text:
             return
 
-        res = self.get_openapi_response(prompt=f"Explain the meaning of this text from {ctx.message.cached_message.author.display_name.title()}:\n{clean_text}\nExplanation:",
+        res = self.get_openapi_response(prompt=f"Explain the meaning of this text from {ctx.message.reference.cached_message.author.display_name.title()}:\n{clean_text}\nExplanation:",
                                         stop="Explanation:", tokens=256)
         await ctx.reply(content=res)
 
