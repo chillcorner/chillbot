@@ -1,7 +1,5 @@
-import asyncio
 import re
 import openai
-import discord
 from discord.ext import commands
 
 from bot.constants import Keys
@@ -26,7 +24,7 @@ class OpenAI(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def get_openapi_response(self, *, prompt, stop, tokens, temperature=0.7):
+    def get_openapi_response(self, *, prompt, stop, tokens, temperature=0.7):
         """
         Returns a response from OpenAI.ai.
         """
@@ -57,7 +55,7 @@ class OpenAI(commands.Cog):
         if not clean:
             return
 
-        res = await self.get_openapi_response(prompt=f"Explain the meaning of this text from {ref.cached_message.author.display_name.title()}:\n{clean}\nExplanation:",
+        res = self.get_openapi_response(prompt=f"Explain the meaning of this text from {ref.cached_message.author.display_name.title()}:\n{clean}\nExplanation:",
                                               stop="Explanation:", tokens=256)
         await ctx.send(content=res, reference=ref.cached_message.to_reference())
 
@@ -74,7 +72,7 @@ class OpenAI(commands.Cog):
         if not clean:
             return
 
-        res = await self.get_openapi_response(prompt=f"Correct this to standard English:\n{clean}\ncorrection:",
+        res = self.get_openapi_response(prompt=f"Correct this to standard English:\n{clean}\ncorrection:",
                                               stop="Correction:", tokens=60)
         await ctx.send(content=res, reference=ref.cached_message.to_reference())
 
@@ -85,7 +83,7 @@ class OpenAI(commands.Cog):
 
         prompt = "Tell me a random fact" if not topic else f"Tell me a fact about {topic}."
 
-        res = await self.get_openapi_response(prompt=f"{prompt}\nfact:",
+        res = self.get_openapi_response(prompt=f"{prompt}\nfact:",
                                               stop="Fact:", tokens=60)
         await ctx.send(content=res)
 
