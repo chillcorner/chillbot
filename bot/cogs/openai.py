@@ -133,20 +133,18 @@ class OpenAI(commands.Cog):
         if not question:
             return
 
-        prompt = f"I am a highly intelligent question answering bot. If you ask me a question that is rooted in truth, I will give you the answer. If you ask me a question that is nonsense, trickery, or has no clear answer, I will respond with \"I don't know.\".\n\nQ: {question}\nA:"
-
         async with ctx.channel.typing():
             func = functools.partial(self.get_openapi_response,
-                                     prompt=f"{prompt}",
-                                     stop="A:",
-                                     tokens=100,
-                                     temperature=0.8,
-                                     frequency_penalty=0.2,
-                                     presence_penalty=0.2
+                                     prompt=f"{question}\n",
+                                     stop="\n",
+                                     tokens=256,
+                                     temperature=0.7,
+                                     frequency_penalty=0,
+                                     presence_penalty=0
                                      )
             res = await self.bot.loop.run_in_executor(None, func)
 
-            await ctx.send(content=res)
+            await ctx.send(content=res.replace("\n", " "))
 
     @commands.command(enabled=False)
     @commands.cooldown(1, 30, commands.BucketType.user)
