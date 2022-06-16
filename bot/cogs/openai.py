@@ -135,16 +135,11 @@ class OpenAI(commands.Cog):
 
         async with ctx.channel.typing():
             func = functools.partial(self.get_openapi_response,
-                                     prompt=f"{question}\n\n",
-                                     stop="\n",
-                                     tokens=256,
-                                     temperature=0.7,
-                                     frequency_penalty=0,
-                                     presence_penalty=0
-                                     )
+                                     prompt=f"{question}\nAnswer:",
+                                     stop="Answer:", tokens=256)
             res = await self.bot.loop.run_in_executor(None, func)
 
-            print("Res", res)
+            await ctx.send(content=res.strip().replace("\n", ""))
 
             await ctx.send(content=res)
 
