@@ -27,8 +27,7 @@ def is_clean_with_ref(ctx):
 
     clean = clean_message(ref.cached_message.content)
 
-    if not clean:
-        return
+    return True if clean else False
 
 
 class OpenAI(commands.Cog):
@@ -81,7 +80,7 @@ class OpenAI(commands.Cog):
     async def fact(self, ctx, *, topic=None):
         """Tells you a random fact about given topic."""
         if topic:
-            prompt = clean_message(topic)        
+            prompt = clean_message(topic)
 
         prompt = "Tell me a random fact" if not topic else f"Tell me a fact about {topic}."
 
