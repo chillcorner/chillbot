@@ -6,7 +6,7 @@ from discord.utils import get
 from discord.ext import tasks
 
 
-from bot.constants import Channels
+from bot.constants import Channels, Guilds
 
 
 class PreventRaids(commands.Cog):
@@ -21,6 +21,9 @@ class PreventRaids(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        if member.guild.id != Guilds.cc:
+            # Only track CC members
+            return
         self.new_members.append(member)
 
     @tasks.loop(seconds=3)

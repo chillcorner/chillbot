@@ -204,6 +204,11 @@ class Bot(metaclass=YAMLGetter):
     prefix: str
     token: str
 
+class Guilds(metaclass=YAMLGetter):
+    section = "guilds"
+
+    cc: int
+
 
 class Channels(metaclass=YAMLGetter):
     section = "channels"

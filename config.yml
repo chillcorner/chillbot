@@ -3,6 +3,8 @@ bot:
   token: !ENV "BOT_TOKEN"
   description: "A minimal general purpose bot for Chill Corner discord server"
 
+guilds:
+  cc: 444470893599784960
 channels:
   staff_room: 711567984686137426
 
