@@ -27,7 +27,7 @@ def is_clean_with_ref(ctx):
 
     clean = clean_message(ref.cached_message.content)
 
-    return True if clean else False
+    return clean if clean else False
 
 
 class OpenAI(commands.Cog):
