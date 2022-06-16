@@ -109,7 +109,7 @@ class OpenAI(commands.Cog):
         await ctx.send(content=res, reference=ref)
 
     @commands.command()
-    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.cooldown(1, 15, commands.BucketType.channel)
     async def fact(self, ctx, *, topic=None):
         """Tells you a random fact about given topic."""
         if topic:
@@ -123,7 +123,7 @@ class OpenAI(commands.Cog):
                                      stop="Fact:", tokens=60)
             res = await self.bot.loop.run_in_executor(None, func)
 
-            await ctx.send(content=res)
+            await ctx.send(res, reference=ctx.message.reference.cached_message.to_reference())
 
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -143,7 +143,7 @@ class OpenAI(commands.Cog):
             await ctx.send(content=res.strip().replace("\n", ""))
 
     @commands.command()
-    @commands.cooldown(1, 20, commands.BucketType.member)   
+    @commands.cooldown(1, 20, commands.BucketType.member)
     async def topic(self, ctx, *, category: Optional[str]):
         """Generates a question for you to talk about based on the topic category provided. Leave topic empty for a random question"""
 
