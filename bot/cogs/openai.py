@@ -124,6 +124,25 @@ class OpenAI(commands.Cog):
 
             await ctx.send(content=res)
 
+    @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def story(self, ctx, *, members: str):
+        """Generates a story on member mentions"""
+        if not members:
+            return
+
+        names = ', '.join(f"{m.strip()}" for m in members.split())
+
+        prompt = f'Create a fake story between {names}.'
+
+        async with ctx.channel.typing():
+            func = functools.partial(self.get_openapi_response,
+                                     prompt=f"{prompt}\nStory:",
+                                     stop="Story:", tokens=256)
+            res = await self.bot.loop.run_in_executor(None, func)
+
+            await ctx.send(content=res)
+
 
 async def setup(bot):
     await bot.add_cog(OpenAI(bot))
