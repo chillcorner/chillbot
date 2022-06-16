@@ -47,8 +47,8 @@ class OpenAI(commands.Cog):
             temperature=temperature,
             max_tokens=tokens,
             top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0,
+            frequency_penalty=frequency_penalty,
+            presence_penalty=presence_penalty,
             stop=[stop]
         )
 
@@ -135,7 +135,7 @@ class OpenAI(commands.Cog):
 
         async with ctx.channel.typing():
             func = functools.partial(self.get_openapi_response,
-                                     prompt=f"{question}\n",
+                                     prompt=f"{question}\n\n",
                                      stop="\n",
                                      tokens=256,
                                      temperature=0.7,
@@ -144,7 +144,9 @@ class OpenAI(commands.Cog):
                                      )
             res = await self.bot.loop.run_in_executor(None, func)
 
-            await ctx.send(content=res.replace("\n", " "))
+            print("Res", res)
+
+            await ctx.send(content=res)
 
     @commands.command(enabled=False)
     @commands.cooldown(1, 30, commands.BucketType.user)
