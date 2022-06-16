@@ -1,5 +1,6 @@
 import functools
 import re
+from typing import Optional
 import openai
 from discord.ext import commands
 
@@ -142,25 +143,32 @@ class OpenAI(commands.Cog):
             await ctx.send(content=res.strip().replace("\n", ""))
 
     @commands.command()
-    @commands.cooldown(1, 30, commands.BucketType.member)
-    async def fact(self, ctx, *, topic=None):
-        """Tells you a random fact about given topic."""
+    @commands.cooldown(1, 20, commands.BucketType.member)   
+    async def topic(self, ctx, *, category: Optional[str]):
+        """Generates a question for you to talk about based on the topic category provided. Leave topic empty for a random question"""
 
-        prompt = "Tell me a random fact" if not topic else f"Tell me a fact about {topic}."
+        if not category:
+            prompt = "Generate a random thought-provoking question to talk about:"
+        else:
+            cat_clean = clean_message(category)
+            if not cat_clean:
+                return
+
+            prompt = f"Generate a thought-provoking question about {cat_clean.title()}:"
 
         response = openai.Completion.create(
             engine="text-davinci-002",
-            prompt=f"{prompt}\nfact:",
-            temperature=0.7,
-            max_tokens=60,
+            prompt=f"{prompt}\nQuestion:",
+            temperature=1,
+            max_tokens=256,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0,
-            stop=["fact:"]
+            stop=["Question:"]
         )
 
         r = response["choices"][0]["text"]
-        await ctx.send(content=r)     
+        await ctx.send(content=r, reference=ctx.message.to_reference())
 
     @commands.command(enabled=False)
     @commands.cooldown(1, 30, commands.BucketType.user)
