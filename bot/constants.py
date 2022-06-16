@@ -210,6 +210,15 @@ class Channels(metaclass=YAMLGetter):
 
     staff_room: int
 
+
+class Roles(metaclass=YAMLGetter):
+    section = "roles"
+
+    mod: int
+    artist: int
+    verified: int
+
+
 class Keys(metaclass=YAMLGetter):
     section = "keys"
 

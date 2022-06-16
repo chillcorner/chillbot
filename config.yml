@@ -6,6 +6,11 @@ bot:
 channels:
   staff_room: 711567984686137426
 
+roles:
+  mod: 445407188375306243
+  verified: 480030345916317746
+  artist: 525019822728282113
+
 keys:
   openai_key: !ENV "OPENAI_KEY"
 

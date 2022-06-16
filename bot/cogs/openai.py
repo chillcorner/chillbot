@@ -57,23 +57,25 @@ class OpenAI(commands.Cog):
     @commands.cooldown(1, 30, commands.BucketType.member)
     async def explain(self, ctx):
         """Explain a text for you"""
-        if not is_clean_with_ref(ctx):
+        clean_text = is_clean_with_ref(ctx)
+        if not clean_text:
             return
 
-        res = self.get_openapi_response(prompt=f"Explain the meaning of this text from {ref.cached_message.author.display_name.title()}:\n{clean}\nExplanation:",
+        res = self.get_openapi_response(prompt=f"Explain the meaning of this text from {ctx.message.cached_message.author.display_name.title()}:\n{clean_text}\nExplanation:",
                                         stop="Explanation:", tokens=256)
-        await ctx.send(content=res, reference=ref.cached_message.to_reference())
+        await ctx.reply(content=res)
 
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.member)
     async def english(self, ctx):
         """Corrects grammar and spelling errors in a text for you"""
-        if not is_clean_with_ref(ctx):
+        clean_text = is_clean_with_ref(ctx)
+        if not clean_text:
             return
 
-        res = self.get_openapi_response(prompt=f"Correct this to standard English:\n{clean}\ncorrection:",
+        res = self.get_openapi_response(prompt=f"Correct this to standard English:\n{clean_text}\ncorrection:",
                                         stop="Correction:", tokens=60)
-        await ctx.send(content=res, reference=ref.cached_message.to_reference())
+        await ctx.reply(content=res)
 
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.member)
