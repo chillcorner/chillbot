@@ -36,7 +36,7 @@ class OpenAI(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def get_openapi_response(self, *, prompt, stop, tokens, temperature=0.7):
+    def get_openapi_response(self, *, prompt, stop, tokens, temperature=0.7, frequency_penalty=0, presence_penalty=0):
         """
         Returns a response from OpenAI.ai.
         """
@@ -125,6 +125,30 @@ class OpenAI(commands.Cog):
             await ctx.send(content=res)
 
     @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def ask(self, ctx, *, question: str):
+        """Ask any question to bot"""
+
+        question = clean_message(question)
+        if not question:
+            return
+
+        prompt = f"I am a highly intelligent question answering bot. If you ask me a question that is rooted in truth, I will give you the answer. If you ask me a question that is nonsense, trickery, or has no clear answer, I will respond with \"I don't know.\".\n\nQ: {question}\nA:"
+
+        async with ctx.channel.typing():
+            func = functools.partial(self.get_openapi_response,
+                                     prompt=f"{prompt}",
+                                     stop="A:",
+                                     tokens=100,
+                                     temperature=0.8,
+                                     frequency_penalty=0.2,
+                                     presence_penalty=0.2
+                                     )
+            res = await self.bot.loop.run_in_executor(None, func)
+
+            await ctx.send(content=res)
+
+    @commands.command(enabled=False)
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def story(self, ctx, *, members: str):
         """Generates a story based on names provided"""
