@@ -141,7 +141,7 @@ class OpenAI(commands.Cog):
 
             await ctx.send(content=res.strip().replace("\n", ""))
 
-            await ctx.send(content=res)
+          
 
     @commands.command(enabled=False)
     @commands.cooldown(1, 30, commands.BucketType.user)
