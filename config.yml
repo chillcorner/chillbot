@@ -1,0 +1,13 @@
+bot:
+  prefix: "!"
+  token: !ENV "BOT_TOKEN"
+  description: "A minimal general purpose bot for Chill Corner discord server"
+
+channels:
+  staff_room: 711567984686137426
+
+keys:
+  openai_key: !ENV "OPENAI_KEY"
+
+config:
+  required_keys: ["bot.token"]
