@@ -55,7 +55,7 @@ class OpenAI(commands.Cog):
         return response["choices"][0]["text"]
 
     @commands.command()
-    @commands.cooldown(1, 30, commands.BucketType.member)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def explain(self, ctx):
         """Explain a text for you"""
         clean_text = is_clean_with_ref(ctx)
@@ -64,10 +64,38 @@ class OpenAI(commands.Cog):
 
         res = self.get_openapi_response(prompt=f"Explain the meaning of this text from {ctx.message.reference.cached_message.author.display_name.title()}:\n{clean_text}\nExplanation:",
                                         stop="Explanation:", tokens=256)
-        await ctx.reply(content=res)
+        ref = ctx.message.reference.cached_message.to_reference()
+        await ctx.send(content=res, reference=ref)
 
     @commands.command()
-    @commands.cooldown(1, 30, commands.BucketType.member)
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def answer(self, ctx):
+        """Answers a question for you"""
+        clean_text = is_clean_with_ref(ctx)
+        if not clean_text:
+            return
+
+        res = self.get_openapi_response(prompt=f"Generate a quick response for this question:\n{clean_text}\nresponse:",
+                                        stop="Response:", tokens=256)
+
+        ref = ctx.message.reference.cached_message.to_reference()
+        await ctx.send(content=res, reference=ref)
+
+    @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def tldr(self, ctx):
+        """Summarizes a long text for you"""
+        clean_text = is_clean_with_ref(ctx)
+        if not clean_text:
+            return
+
+        res = self.get_openapi_response(prompt=f"Summarize this for a second-grade student:\n{clean_text}\nsummary:",
+                                        stop="Response:", tokens=75)
+        ref = ctx.message.reference.cached_message.to_reference()
+        await ctx.send(content=res, reference=ref)
+
+    @commands.command()
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def english(self, ctx):
         """Corrects grammar and spelling errors in a text for you"""
         clean_text = is_clean_with_ref(ctx)
@@ -76,10 +104,11 @@ class OpenAI(commands.Cog):
 
         res = self.get_openapi_response(prompt=f"Correct this to standard English:\n{clean_text}\ncorrection:",
                                         stop="Correction:", tokens=60)
-        await ctx.reply(content=res)
+        ref = ctx.message.reference.cached_message.to_reference()
+        await ctx.send(content=res, reference=ref)
 
     @commands.command()
-    @commands.cooldown(1, 30, commands.BucketType.member)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def fact(self, ctx, *, topic=None):
         """Tells you a random fact about given topic."""
         if topic:
@@ -89,8 +118,8 @@ class OpenAI(commands.Cog):
 
         async with ctx.channel.typing():
             func = functools.partial(self.get_openapi_response,
-                                                      prompt=f"{prompt}\nfact:",
-                                                      stop="Fact:", tokens=60)
+                                     prompt=f"{prompt}\nfact:",
+                                     stop="Fact:", tokens=60)
             res = await self.bot.loop.run_in_executor(None, func)
 
             await ctx.send(content=res)
