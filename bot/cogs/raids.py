@@ -25,7 +25,7 @@ class PreventRaids(commands.Cog):
 
     @tasks.loop(seconds=3)
     async def join_watcher(self):
-        self.bot.loop.create_task(self.process_joins())
+        await self.process_joins()
 
     @join_watcher.before_loop
     async def before_join_watcher(self):
@@ -36,7 +36,7 @@ class PreventRaids(commands.Cog):
         new_members_copy = self.new_members.copy()
         self.new_members.clear()
 
-        if not (new_members_copy or len(new_members_copy) >= 5):
+        if not len(new_members_copy) >= 5:
             return
 
         for member in new_members_copy:
