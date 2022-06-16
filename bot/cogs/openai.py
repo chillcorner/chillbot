@@ -87,7 +87,7 @@ class OpenAI(commands.Cog):
         prompt = "Tell me a random fact" if not topic else f"Tell me a fact about {topic}."
 
         async with ctx.channel.typing():
-            res = await self.bot.loop.run_in_executor(None, self._get_openapi_response,
+            res = await self.bot.loop.run_in_executor(None, self.get_openapi_response,
                                                       prompt=f"{prompt}\nfact:",
                                                       stop="Fact:", tokens=60)
 
