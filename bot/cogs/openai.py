@@ -127,7 +127,7 @@ class OpenAI(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def story(self, ctx, *, members: str):
-        """Generates a story on member mentions"""
+        """Generates a story based on names provided"""
         if not members:
             return
 
