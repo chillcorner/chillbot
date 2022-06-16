@@ -26,7 +26,7 @@ intents.presences = True
 bot_extensions = [
     'cogs.raids',
     'cogs.openai',
-    'cogs.verification',
+    # 'cogs.verification',
 
 ]
 
