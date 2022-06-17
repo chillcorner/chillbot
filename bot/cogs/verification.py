@@ -36,8 +36,10 @@ async def create_verification_channel(member: discord.Member, verification_type:
 
     code = get_random_code()
 
+    emoji = "🤳" if verification_type == "selfie" else "🎨"
+
     priv_channel = await member.guild.create_text_channel(
-        name=f"✅ {verification_type}_{code}_{member.display_name}",
+        name=f"{emoji} {verification_type}_{code}_{member.display_name}",
         category=cat,
         topic=f"{verification_type.title()} verification for {member.display_name}",
         slowmode_delay=5,
