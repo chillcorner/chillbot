@@ -135,5 +135,5 @@ class ChillBot(commands.Bot):
         elif isinstance(exception, commands.ArgumentParsingError):
             await ctx.send(exception)
 
-        else:
-            raise exception
+        elif isinstance(exception, discord.Forbidden):
+            print(exception, exception.original.__traceback__)
