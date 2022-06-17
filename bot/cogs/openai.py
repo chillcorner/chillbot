@@ -135,12 +135,20 @@ class OpenAI(commands.Cog):
             return
 
         async with ctx.channel.typing():
-            func = functools.partial(self.get_openapi_response,
-                                     prompt=question,
-                                     stop='', tokens=256)
-            res = await self.bot.loop.run_in_executor(None, func)
+             response = openai.Completion.create(
+                    engine="text-davinci-002",
+                    prompt=question,
+                    temperature=0.7,
+                    max_tokens=256,
+                    top_p=1,
+                    frequency_penalty=0,
+                    presence_penalty=0,
+                  
+        )
 
-            await ctx.send(content=res.strip().replace("\n", ""))
+        res = response["choices"][0]["text"]
+        print("Ask response", res")
+        await ctx.send(content=res.strip().replace("\n", ""))
 
     @commands.command()
     @commands.cooldown(1, 20, commands.BucketType.member)
