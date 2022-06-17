@@ -5,7 +5,7 @@ import string
 import discord
 import openai
 from discord.ext import commands
-from utils.checks import is_mod
+from bot.cogs.utils.checks import is_mod
 from bot.constants import Keys, Roles, Categories
 
 

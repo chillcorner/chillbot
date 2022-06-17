@@ -147,7 +147,6 @@ class OpenAI(commands.Cog):
             )
 
         res = response["choices"][0]["text"]
-        print("Ask response", res)
         await ctx.send(content=res.strip().replace("\n", ""))
 
     @commands.command()
