@@ -123,7 +123,7 @@ class OpenAI(commands.Cog):
                                      stop="Fact:", tokens=60)
             res = await self.bot.loop.run_in_executor(None, func)
 
-            await ctx.send(res, reference=ctx.message.reference.cached_message.to_reference())
+            await ctx.reply(res)
 
     @commands.command()
     @commands.cooldown(1, 30, commands.BucketType.user)
