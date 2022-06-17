@@ -5,10 +5,13 @@ import string
 import discord
 import openai
 from discord.ext import commands
-from bot.constants import Keys, Roles, Categories
+from bot.constants import Roles, Categories
+
 
 def is_mod(member):
     return member.guild.get_role(Roles.mod) in member.roles
+
+
 def get_random_code():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
 
