@@ -141,11 +141,10 @@ class OpenAI(commands.Cog):
                 engine="text-davinci-002",
                 prompt=f"{question}\n\n",
                 temperature=0.7,
-                max_tokens=70,
+                max_tokens=256,
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0,
-                stop=['.']
 
             )
 
