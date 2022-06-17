@@ -47,7 +47,7 @@ async def create_verification_channel(member: discord.Member, verification_type:
     # notify with an example
     embed = discord.Embed(color=discord.Color.red())
     embed.set_author(name="Follow these verification steps:",
-                     icon_url=member.avatar_url)
+                     icon_url=member.display_avatar.url)
     embed.add_field(name="Verification Code", value=f"{code}")
 
     if verification_type == "selfie":
@@ -73,7 +73,7 @@ async def create_verification_channel(member: discord.Member, verification_type:
 
     # embed.set_image(url=)
 
-    _msg = await priv_channel.send(embed=embed, content=member.mention, view=VerificationView(member))
+    _msg = await priv_channel.send(embed=embed, content=member.mention, view=VerificationView(member, verification_type))
 
     await asyncio.sleep(60*25)
     if priv_channel:
@@ -85,7 +85,7 @@ async def create_verification_channel(member: discord.Member, verification_type:
 
 
 class VerificationView(discord.ui.View):
-    def __init__(self, member: discord.Member):
+    def __init__(self, member: discord.Member, verification_type: str):
         super().__init__()
         self.value = None
 
@@ -95,13 +95,15 @@ class VerificationView(discord.ui.View):
             return
 
         await interaction.response.send_message(f'Verifying {self.member.display_name}', ephemeral=True)
-        role = interaction.guild.get_role(Roles.verified)
+        role_id = Roles.verified if self.verification_type == "selfie" else Roles.artist
+       
+        role = interaction.guild.get_role(role_id)
+        
         await self.member.add_roles(role)
 
         self.value = True
         self.stop()
 
-        role = interaction.guild.get_role(Roles.verified)
 
         await interaction.channel.delete(reason=f"Verfication successful")
         await self.member.send(f"We have verified your submission 🥳")
