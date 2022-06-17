@@ -19,6 +19,8 @@ from typing import Dict, List, Optional
 
 import yaml
 
+from bot.cogs.verification import Verification
+
 log = logging.getLogger(__name__)
 
 
@@ -209,11 +211,18 @@ class Guilds(metaclass=YAMLGetter):
 
     cc: int
 
+class Categories(metaclass=YAMLGetter):
+    section = "categories"
+
+    verification: int
+
 
 class Channels(metaclass=YAMLGetter):
     section = "channels"
 
     staff_room: int
+
+
 
 
 class Roles(metaclass=YAMLGetter):
