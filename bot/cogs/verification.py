@@ -165,6 +165,7 @@ class Verification(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @commands.cooldown(1, 60, commands.BucketType.member)
     @commands.guild_only()
     async def verify(self, ctx):
         if ctx.guild.id != Guilds.cc:
