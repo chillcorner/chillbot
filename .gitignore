@@ -3,3 +3,6 @@
 venv/
 config_test.yml
 *.log
+*.pyc
+/.venv/
+/.git/
