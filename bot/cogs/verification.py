@@ -84,7 +84,7 @@ async def create_verification_channel(member: discord.Member, verification_type:
     #         if msg.author == member and len(msg.attachments) >= 1:
     #             return
     #     await priv_channel.delete()
-
+    return priv_channel
 
 class VerificationView(discord.ui.View):
     def __init__(self, member: discord.Member, verification_type: str):
@@ -136,10 +136,10 @@ class VerificationTypeView(discord.ui.View):
         if verified_role in interaction.user.roles:
             await interaction.response.send_message(f"You already have the {verified_role.name} role", ephemeral=True)
         else:
-            await create_verification_channel(interaction.user, "selfie")
-            await interaction.response.send_message('Please follow your recent ping.', ephemeral=True)
+            channel = await create_verification_channel(interaction.user, "selfie")
+            await interaction.response.send_message(f'Please follow your recent ping in {channel.mention}', ephemeral=True)
 
-        self.value = True
+        self.value = False
         button.disabled = True
         self.stop()
 
