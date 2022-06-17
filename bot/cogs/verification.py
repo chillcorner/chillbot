@@ -139,9 +139,7 @@ class VerificationTypeView(discord.ui.View):
             channel = await create_verification_channel(interaction.user, "selfie")
             await interaction.response.send_message(f'Please follow your recent ping in {channel.mention}', ephemeral=True)
 
-        self.value = True
-        button.disabled = True
-        await interaction.response.edit_message(view=self)
+        self.stop()
 
 
     @discord.ui.button(label='Art verification', style=discord.ButtonStyle.blurple)
@@ -155,9 +153,7 @@ class VerificationTypeView(discord.ui.View):
             channel = await create_verification_channel(interaction.user, "art")
             await interaction.response.send_message(f'Please follow your recent ping in {channel.mention}', ephemeral=True)
 
-        self.value = True
-        button.disabled = True
-        await interaction.response.edit_message(view=self)
+        self.stop()
 
 
 class Verification(commands.Cog):
