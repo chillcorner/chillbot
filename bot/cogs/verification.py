@@ -88,7 +88,7 @@ async def create_verification_channel(member: discord.Member, verification_type:
 
 class VerificationView(discord.ui.View):
     def __init__(self, member: discord.Member, verification_type: str):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
         self.member = member
         self.verification_type = verification_type
@@ -126,7 +126,7 @@ class VerificationView(discord.ui.View):
 
 class VerificationTypeView(discord.ui.View):
     def __init__(self):
-        super().__init__()
+        super().__init__(timeout=None)
         self.value = None
 
     @discord.ui.button(label='Selfie verification', style=discord.ButtonStyle.green)
