@@ -19,7 +19,6 @@ from typing import Dict, List, Optional
 
 import yaml
 
-from bot.cogs.verification import Verification
 
 log = logging.getLogger(__name__)
 
