@@ -142,6 +142,8 @@ class VerificationTypeView(discord.ui.View):
         self.value = False
         button.disabled = True
         self.stop()
+        await interaction.response.edit_message(view=self)
+
 
     @discord.ui.button(label='Art verification', style=discord.ButtonStyle.blurple)
     async def art(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -157,6 +159,7 @@ class VerificationTypeView(discord.ui.View):
         self.value = False
         button.disabled = True
         self.stop()
+        await interaction.response.edit_message(view=self)
 
 
 class Verification(commands.Cog):
