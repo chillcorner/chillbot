@@ -139,7 +139,7 @@ class OpenAI(commands.Cog):
         async with ctx.channel.typing():
             response = openai.Completion.create(
                 engine="text-davinci-002",
-                prompt=question,
+                prompt=f"{question}\n\n",
                 temperature=0.7,
                 max_tokens=256,
                 top_p=1,
