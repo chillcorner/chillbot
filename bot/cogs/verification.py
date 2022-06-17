@@ -75,19 +75,21 @@ async def create_verification_channel(member: discord.Member, verification_type:
 
     _msg = await priv_channel.send(embed=embed, content=member.mention, view=VerificationView(member, verification_type))
 
-    await asyncio.sleep(60*25)
-    if priv_channel:
-        last_20 = await priv_channel.history(limit=20).flatten()
-        for msg in last_20:
-            if msg.author == member and len(msg.attachments) >= 1:
-                return
-        await priv_channel.delete()
+    # await asyncio.sleep(60*25)
+    # if priv_channel:
+    #     last_20 = await priv_channel.history(limit=20).flatten()
+    #     for msg in last_20:
+    #         if msg.author == member and len(msg.attachments) >= 1:
+    #             return
+    #     await priv_channel.delete()
 
 
 class VerificationView(discord.ui.View):
     def __init__(self, member: discord.Member, verification_type: str):
         super().__init__()
         self.value = None
+        self.member = member
+        self.verification_type = verification_type
 
     @discord.ui.button(label='Approve', style=discord.ButtonStyle.green)
     async def approve(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -96,14 +98,13 @@ class VerificationView(discord.ui.View):
 
         await interaction.response.send_message(f'Verifying {self.member.display_name}', ephemeral=True)
         role_id = Roles.verified if self.verification_type == "selfie" else Roles.artist
-       
+
         role = interaction.guild.get_role(role_id)
-        
+
         await self.member.add_roles(role)
 
         self.value = True
         self.stop()
-
 
         await interaction.channel.delete(reason=f"Verfication successful")
         await self.member.send(f"We have verified your submission 🥳")
@@ -135,6 +136,7 @@ class VerificationTypeView(discord.ui.View):
         else:
             await create_verification_channel(interaction.user, "selfie")
             await interaction.response.send_message('Please follow your recent ping.', ephemeral=True)
+            
 
         self.value = True
         self.stop()
