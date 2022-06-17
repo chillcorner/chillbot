@@ -140,6 +140,7 @@ class VerificationTypeView(discord.ui.View):
             await interaction.response.send_message('Please follow your recent ping.', ephemeral=True)
 
         self.value = True
+        button.disabled = True
         self.stop()
 
     @discord.ui.button(label='Art verification', style=discord.ButtonStyle.blurple)
@@ -154,6 +155,7 @@ class VerificationTypeView(discord.ui.View):
             await interaction.response.send_message('Please follow your recent ping.', ephemeral=True)
 
         self.value = False
+        button.disabled = True
         self.stop()
 
 
