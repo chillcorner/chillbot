@@ -141,7 +141,7 @@ class OpenAI(commands.Cog):
                 engine="text-davinci-002",
                 prompt=f"{question}\n\n",
                 temperature=0.7,
-                max_tokens=256,
+                max_tokens=70,
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0,
@@ -150,10 +150,10 @@ class OpenAI(commands.Cog):
 
         res = response["choices"][0]["text"]
         print("res", res)
-        await ctx.send(content=res.strip().replace("\n", ""))
+        await ctx.send(content=res.lstrip("\n"))
 
-    @commands.command()
-    @commands.cooldown(1, 20, commands.BucketType.member)
+    @ commands.command()
+    @ commands.cooldown(1, 20, commands.BucketType.member)
     async def topic(self, ctx, *, category: Optional[str]):
         """Generates a question for you to talk about based on the topic category provided. Leave topic empty for a random question"""
 
@@ -180,8 +180,8 @@ class OpenAI(commands.Cog):
         r = response["choices"][0]["text"]
         await ctx.send(content=r, reference=ctx.message.to_reference())
 
-    @commands.command(enabled=False)
-    @commands.cooldown(1, 30, commands.BucketType.user)
+    @ commands.command(enabled=False)
+    @ commands.cooldown(1, 30, commands.BucketType.user)
     async def story(self, ctx, *, members: str):
         """Generates a story based on names provided"""
         if not members:
