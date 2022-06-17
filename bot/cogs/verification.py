@@ -5,10 +5,10 @@ import string
 import discord
 import openai
 from discord.ext import commands
-from bot.cogs.utils import checks
 from bot.constants import Keys, Roles, Categories
 
-
+def is_mod(member):
+    return member.guild.get_role(Roles.mod) in member.roles
 def get_random_code():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
 
@@ -88,7 +88,7 @@ class VerificationView(discord.ui.View):
 
     @discord.ui.button(label='Approve', style=discord.ButtonStyle.green)
     async def approve(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if not checks.checks.is_mod(interaction.user):
+        if not is_mod(interaction.user):
             return
 
         await interaction.response.send_message(f'Verifying {self.member.display_name}', ephemeral=True)
@@ -105,7 +105,7 @@ class VerificationView(discord.ui.View):
 
     @discord.ui.button(label='Reject', style=discord.ButtonStyle.red)
     async def reject(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if not checks.is_mod(interaction.user):
+        if not is_mod(interaction.user):
             return
 
         await interaction.response.send_message(f"Rejecting {self.member.display_name}'s submission", ephemeral=True)
