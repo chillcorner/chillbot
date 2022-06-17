@@ -134,6 +134,8 @@ class OpenAI(commands.Cog):
         if not question:
             return
 
+        print("QUESTION", question)
+
         async with ctx.channel.typing():
             response = openai.Completion.create(
                 engine="text-davinci-002",
