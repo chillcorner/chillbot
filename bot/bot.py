@@ -137,3 +137,6 @@ class ChillBot(commands.Bot):
 
         elif isinstance(exception, discord.Forbidden):
             print(exception, exception.original.__traceback__)
+
+        else:
+            raise exception 
