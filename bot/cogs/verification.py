@@ -5,7 +5,7 @@ import string
 import discord
 import openai
 from discord.ext import commands
-from bot.constants import Roles, Categories
+from bot.constants import Guilds, Roles, Categories
 
 
 def is_mod(member):
@@ -136,7 +136,6 @@ class VerificationTypeView(discord.ui.View):
         else:
             await create_verification_channel(interaction.user, "selfie")
             await interaction.response.send_message('Please follow your recent ping.', ephemeral=True)
-            
 
         self.value = True
         self.stop()
@@ -164,6 +163,8 @@ class Verification(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def verify(self, ctx):
+        if ctx.guild.id != Guilds.cc:
+            return
         await ctx.send("Please select the verification type", view=VerificationTypeView())
 
 
