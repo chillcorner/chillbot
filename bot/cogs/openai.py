@@ -134,7 +134,6 @@ class OpenAI(commands.Cog):
         if not question:
             return
 
-        print("QUESTION", question)
 
         async with ctx.channel.typing():
             response = openai.Completion.create(
@@ -150,7 +149,6 @@ class OpenAI(commands.Cog):
             )
 
         res = response["choices"][0]["text"]
-        print("res", res)
         await ctx.send(content=res.lstrip("\n"))
 
     @ commands.command()
