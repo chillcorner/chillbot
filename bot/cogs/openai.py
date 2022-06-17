@@ -139,13 +139,13 @@ class OpenAI(commands.Cog):
         async with ctx.channel.typing():
             response = openai.Completion.create(
                 engine="text-davinci-002",
-                prompt=f"I am a highly intelligent question answering bot. If you ask me a question that is rooted in truth, I will give you the answer. If you ask me a question that is nonsense, trickery, or has no clear answer, I will respond with 'I don't know'.\n\nQ:{question}\nA:",
+                prompt=f"I am a highly intelligent question answering bot.\n\nQuestion:{question}\nAnswer:",
                 temperature=0,
                 max_tokens=256,
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0,
-                stop=['A:']
+                stop=['Answer:']
 
             )
 
