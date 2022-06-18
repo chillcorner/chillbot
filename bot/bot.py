@@ -28,6 +28,7 @@ bot_extensions = [
     'cogs.openai',
     'cogs.verification',
     'cogs.moderation',
+    'cogs.snippets',
 
 ]
 
