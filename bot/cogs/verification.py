@@ -161,13 +161,24 @@ class Verification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.cooldown(1, 60, commands.BucketType.member)
     @commands.guild_only()
     async def verify(self, ctx):
         if ctx.guild.id != Guilds.cc:
             return
         await ctx.send("Please select the verification type", view=VerificationTypeView())
+
+    @commands.command(hidden=True)    
+    @commands.is_owner()
+    async def delete_channel(self, ctx):
+        """Removes a verification channel directly"""
+        if ctx.guild.id != Guilds.cc:
+            return
+        if ctx.channel.category.id != Categories.verification:
+            return
+
+        await ctx.channel.delete(reason="Interaction test failed")
 
 
 async def setup(bot):
