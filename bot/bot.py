@@ -104,7 +104,10 @@ class ChillBot(commands.Bot):
 
     async def on_command_error(self, ctx, exception):
         if isinstance(exception, commands.CommandNotFound):
-            return "command not found"
+            return
+
+        elif isinstance(exception, commands.BadArgument):
+            await ctx.send(exception)
 
         elif isinstance(exception, commands.UserInputError):
             ctx.command.reset_cooldown(ctx)
@@ -113,7 +116,7 @@ class ChillBot(commands.Bot):
             await ctx.send(exception)
 
         elif isinstance(exception, asyncio.TimeoutError):
-            return "asyncio timeout"
+            return
 
         elif isinstance(exception, commands.NoPrivateMessage):
             await ctx.author.send('This command cannot be used in private messages.')
@@ -139,4 +142,4 @@ class ChillBot(commands.Bot):
             print(exception, exception.original.__traceback__)
 
         else:
-            raise exception 
+            raise exception
