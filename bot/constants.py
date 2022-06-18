@@ -205,6 +205,11 @@ class Bot(metaclass=YAMLGetter):
     prefix: str
     token: str
 
+class Database(metaclass=YAMLGetter):
+    section = 'database'
+
+    pgsql_string: str
+
 
 class Guilds(metaclass=YAMLGetter):
     section = "guilds"

@@ -3,7 +3,7 @@ import datetime as dt
 import logging
 import sys
 import traceback
-
+import asyncpg
 import aiohttp
 
 import discord
@@ -11,7 +11,7 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 
-from bot.constants import Bot
+from bot.constants import Bot, Database
 
 
 intents = discord.Intents.default()
@@ -91,6 +91,9 @@ async def run_bot():
             for n, ext in enumerate(bot_extensions):
                 await bot.load_extension(f"bot.{ext}")
                 print(f"{n + 1}. Loaded extension: [{ext}]")
+
+            pool = await asyncpg.create_pool(Database.pgsql_string)
+            bot.pool = pool
 
             await bot.start(Bot.token, reconnect=True)
 

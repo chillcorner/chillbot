@@ -3,6 +3,9 @@ bot:
   token: !ENV "BOT_TOKEN"
   description: "A minimal general purpose bot for Chill Corner discord server"
 
+database:
+  pgsql_string: !ENV "PGSQL_STRING"
+
 guilds:
   cc: 444470893599784960
 
