@@ -24,12 +24,12 @@ class Moderation(commands.Cog):
 
     @commands.command(aliases=['t'])
     @commands.has_permissions(moderate_members=True)
-    async def timeout(ctx: commands.Context, members: commands.Greedy[discord.Member], duration: Duration, *, reason: str):
+    async def timeout(self, ctx: commands.Context, members: commands.Greedy[discord.Member], duration: Duration, *, reason: str):
         for m in members:
             await m.timeout(duration.dt, reason=reason)
 
     @commands.command(aliases=['st'])
-    async def self_timeout(ctx: commands.Context, duration: Duration, *, reason: str):
+    async def self_timeout(self, ctx: commands.Context, duration: Duration, *, reason: str):
         await ctx.author.timeout(duration.dt, reason=reason)
 
 
