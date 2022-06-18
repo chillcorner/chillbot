@@ -33,6 +33,7 @@ def is_clean_with_ref(ctx):
 
 
 class OpenAI(commands.Cog):
+    """Some OpenAI based commands that are not in the bot's core commands."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -133,7 +134,6 @@ class OpenAI(commands.Cog):
         question = clean_message(question)
         if not question:
             return
-
 
         async with ctx.channel.typing():
             response = openai.Completion.create(
