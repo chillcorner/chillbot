@@ -69,3 +69,7 @@ class Snippets(commands.Cog):
 
         # send snippet
         tmp_msg = await msg.channel.send(content=f"{mentions_str}", embed=embed)
+
+
+async def setup(bot):
+    bot.add_cog(Snippets(bot))
