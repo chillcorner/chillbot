@@ -1,3 +1,5 @@
+# from rdanny @ https://github.com/bharatbots/RoboDanny/blob/rewrite/cogs/utils/time.py
+
 import datetime
 import parsedatetime as pdt
 from dateutil.relativedelta import relativedelta

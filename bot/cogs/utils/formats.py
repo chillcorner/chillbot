@@ -1,3 +1,5 @@
+# from rdanny @ https://github.com/bharatbots/RoboDanny/blob/rewrite/cogs/utils/formats.py
+
 class plural:
     def __init__(self, value):
         self.value = value
