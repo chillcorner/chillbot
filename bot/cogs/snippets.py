@@ -22,7 +22,7 @@ class Snippets(commands.Cog):
         if msg.author.bot:
             return
 
-        if not msg.startswith(';'):
+        if not msg.content.startswith(';'):
             return
 
         title = msg.content[1:].strip()
