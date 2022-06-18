@@ -72,4 +72,4 @@ class Snippets(commands.Cog):
 
 
 async def setup(bot):
-    bot.add_cog(Snippets(bot))
+    await bot.add_cog(Snippets(bot))
