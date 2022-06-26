@@ -35,7 +35,7 @@ class Snippets(commands.Cog):
 
         row = await self.bot.pool.fetchrow("""SELECT * FROM snippets WHERE name = $1""", cmd)
         if not row:
-            return await msg.channel.send(f"Found nothing.")
+            return ## await msg.channel.send(f"Found nothing.")
 
         # check for cooldown
         on_cooldown = await self.is_on_snippet_cooldown(msg)
