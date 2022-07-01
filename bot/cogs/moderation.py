@@ -13,7 +13,7 @@ class Duration(time.ShortTime):
             raise commands.BadArgument(
                 "That's a lot of time! You can only set timeout for up to 28 days.")
 
-        elif duration.seconds < 300:
+        elif duration.days == 0 and duration.seconds < 300:
             raise commands.BadArgument(
                 "You can only set timeout for at least 5 minutes.")
 

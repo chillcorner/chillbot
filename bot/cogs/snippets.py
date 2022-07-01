@@ -33,7 +33,7 @@ class Snippets(commands.Cog):
         mentions_str = " ".join([m.mention for m in msg.mentions])
         cmd = re.sub(r'<@(!?)([0-9]*)>', '', title).strip()
 
-        row = await self.bot.pool.fetchrow("""SELECT * FROM snippets WHERE name = $1""", title)
+        row = await self.bot.pool.fetchrow("""SELECT * FROM snippets WHERE name = $1""", cmd)
         if not row:
             return await msg.channel.send(f"Found nothing.")
 
