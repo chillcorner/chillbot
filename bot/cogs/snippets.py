@@ -68,7 +68,7 @@ class Snippets(commands.Cog):
             embed.set_footer(text=footer)
 
         # send snippet
-        tmp_msg = await msg.channel.send(content=f"{mentions_str}", embed=embed)
+        tmp_msg = await msg.channel.send(reference=msg, embed=embed)
 
 
 async def setup(bot):
