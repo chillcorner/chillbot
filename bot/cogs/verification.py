@@ -80,7 +80,7 @@ async def create_verification_channel(member: discord.Member, verification_type:
     # embed.set_image(url=)
 
     _msg = await priv_channel.send(embed=embed, content=member.mention, view=VerificationView(member, verification_type))
-    loop.create_task(add_channel_remove_option(_msg))
+    await _msg.add_reaction('🗑️')
 
     # await asyncio.sleep(60*25)
     # if priv_channel:
@@ -141,7 +141,7 @@ class VerificationTypeView(discord.ui.View):
         if verified_role in interaction.user.roles:
             await interaction.response.send_message(f"You already have the {verified_role.name} role", ephemeral=True)
         else:
-            channel = await create_verification_channel(interaction.user, "selfie", self.bot.loop)            
+            channel = await create_verification_channel(interaction.user, "selfie")            
             await interaction.response.send_message(f'Please follow your recent ping in {channel.mention}', ephemeral=True)
 
         self.stop()
@@ -155,7 +155,7 @@ class VerificationTypeView(discord.ui.View):
             await interaction.response.send_message(f"You already have the {art_role.name} role", ephemeral=True)
 
         else:
-            channel = await create_verification_channel(interaction.user, "art", self.bot.loop)
+            channel = await create_verification_channel(interaction.user, "art")
             await interaction.response.send_message(f'Please follow your recent ping in {channel.mention}', ephemeral=True)
 
         self.stop()
