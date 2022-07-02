@@ -172,7 +172,7 @@ class Verification(commands.Cog):
         if payload.member == self.bot.user:
             return
         channel = self.bot.get_channel(payload.channel_id)
-        if channel.category.id in Categories.verification:
+        if channel.category.id == Categories.verification:
             if is_mod(payload.member) and payload.emoji == "🗑️":
                 await channel.delete(reason="Verification couldn't be completed")
 
