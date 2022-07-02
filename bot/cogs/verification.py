@@ -169,6 +169,8 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
+        if payload.member == self.bot.user:
+            return
         channel = self.bot.get_channel(payload.channel_id)
         if channel.category.id in Categories.verification:
             if is_mod(payload.member) and payload.emoji == "🗑️":
