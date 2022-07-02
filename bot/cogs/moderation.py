@@ -8,26 +8,23 @@ from bot.constants import Channels, Whitelists
 
 
 async def handle_media_only_channel_content(msg):
-    if msg.channel.id in Whitelists.media_channels:
-        print('Media only channel content detected.')
-        if msg.attachments:
-            return
-        if type(msg.channel) == discord.Thread:
-            # Ignore texts in a thread
-            print('Ignoring text in a thread.')
-            return
+    if not msg.channel.id in Whitelists.media_channels:
+        return
+    
+    if msg.attachments:
+        return
+    if type(msg.channel) == discord.Thread:
+        # Ignore texts in a thread
+        return
+    
 
-        if type(msg) != discord.MessageType.default:
-            # Likely system messages
-            print('Ignoring system messages.')
-            return
-
+    if type(msg) == discord.MessageType.default:        
         try:
             await msg.delete()
             await msg.author.send("Please create a thread and post your reply there instead of directly replying to this channel.")
         except discord.HTTPException:
             pass  # Ignore if user has DMs disabled or message is already gone
-            print('Failed to delete message.')
+          
 
 
 class Duration(time.ShortTime):
