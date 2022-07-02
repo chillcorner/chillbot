@@ -24,7 +24,7 @@ roles:
   artist: 525019822728282113
 
 whitelists:
-  MEDIA_ONLY_CHANNELS:
+  media_channels:
     - *MEDIA_ONLY_CHANNELS
 
 keys:
