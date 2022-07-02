@@ -1,3 +1,4 @@
+from io import BytesIO
 import re
 import aiohttp
 import discord
@@ -96,7 +97,8 @@ class Snippets(commands.Cog):
             storage_channel = self.bot.get_channel(Channels.storage)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as resp:
-                    msg = await storage_channel.send(discord.File(await resp.read(), filename=str(ctx.message.id)))
+                    bytes_data = await resp.read()
+                    msg = await storage_channel.send(discord.File(BytesIO(bytes_data), filename=str(ctx.message.id)))
 
                     if msg.attachments:
                         url = msg.attachments[0].url
