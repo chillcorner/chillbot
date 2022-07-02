@@ -87,10 +87,10 @@ class Snippets(commands.Cog):
             return
         if not ref.cached_message:
             return await ctx.send("No message found in bot cache")
-        if not ref.attachments:
+        if not ref.cached_message.attachments:
             return await ctx.send("No image attached.")
 
-        url = ref.attachments[0].url
+        url = ref.cached_message.attachments[0].url
         if re.match(IMAGE_URL_PATTERN, url):
             storage_channel = self.bot.get_channel(Channels.storage)
             msg = await storage_channel.send(url)
