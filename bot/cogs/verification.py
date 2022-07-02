@@ -169,10 +169,10 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        if payload.user_id == self.user.id:
+        if payload.user_id == self.bot.user.id:
             return
 
-        channel = self.get_channel(payload.channel_id)
+        channel = self.bot.get_channel(payload.channel_id)
         if channel is None:
             return
 
