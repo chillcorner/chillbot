@@ -6,3 +6,4 @@ config_test.yml
 *.pyc
 /.venv/
 /.git/
+test.py

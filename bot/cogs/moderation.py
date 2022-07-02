@@ -1,8 +1,25 @@
-from datetime import datetime
+
 import discord
 from discord.ext import commands
+from typing import Optional
 
 from bot.cogs.utils import time
+from bot.constants import Channels, Whitelists
+
+
+async def handle_media_only_channel_content(msg):
+    if msg.attachments:
+        return
+    if type(msg.channel) == discord.Thread:
+        # Ignore texts in a thread
+        return
+
+    if msg.type == discord.MessageType.default:
+        try:
+            await msg.delete()
+            await msg.author.send("Please create a thread and post your reply there instead of directly replying to this channel.")
+        except discord.HTTPException:
+            pass  # Ignore if user has DMs disabled or message is already gone
 
 
 class Duration(time.ShortTime):
@@ -13,7 +30,7 @@ class Duration(time.ShortTime):
             raise commands.BadArgument(
                 "That's a lot of time! You can only set timeout for up to 28 days.")
 
-        elif duration.seconds < 300:
+        elif duration.days == 0 and duration.seconds < 300:
             raise commands.BadArgument(
                 "You can only set timeout for at least 5 minutes.")
 
@@ -21,6 +38,17 @@ class Duration(time.ShortTime):
 class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+
+        if message.guild is None:
+            return
+        
+        if message.channel.id in Whitelists.media_channels:
+            await handle_media_only_channel_content(message)
 
     @commands.command(aliases=['t'])
     @commands.has_permissions(moderate_members=True)
@@ -30,9 +58,9 @@ class Moderation(commands.Cog):
             await m.timeout(duration.dt, reason=reason)
 
     @commands.command(aliases=['st'])
-    async def self_timeout(self, ctx: commands.Context, duration: Duration, *, reason: str):
+    async def self_timeout(self, ctx: commands.Context, duration: Duration, *, reason: Optional[str]):
         """Timeout yourself from 5 minutes to 28 days. Example: !st 2h study"""
-      
+
         await ctx.author.timeout(duration.dt, reason=reason)
 
 
