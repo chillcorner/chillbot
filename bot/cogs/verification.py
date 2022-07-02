@@ -16,7 +16,11 @@ def get_random_code():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
 
 
-async def create_verification_channel(member: discord.Member, verification_type: str):
+async def add_channel_remove_option(msg):
+    await asyncio.sleep(30*60)
+    await msg.add_reaction('🗑️')
+
+async def create_verification_channel(member: discord.Member, verification_type: str, loop: asyncio.AbstractEventLoop):
     cat = member.guild.get_channel(Categories.verification)
 
     mod_role = member.guild.get_role(Roles.mod)
@@ -76,6 +80,7 @@ async def create_verification_channel(member: discord.Member, verification_type:
     # embed.set_image(url=)
 
     _msg = await priv_channel.send(embed=embed, content=member.mention, view=VerificationView(member, verification_type))
+    loop.create_task(add_channel_remove_option(_msg))
 
     # await asyncio.sleep(60*25)
     # if priv_channel:
@@ -136,7 +141,7 @@ class VerificationTypeView(discord.ui.View):
         if verified_role in interaction.user.roles:
             await interaction.response.send_message(f"You already have the {verified_role.name} role", ephemeral=True)
         else:
-            channel = await create_verification_channel(interaction.user, "selfie")
+            channel = await create_verification_channel(interaction.user, "selfie", self.bot.loop)            
             await interaction.response.send_message(f'Please follow your recent ping in {channel.mention}', ephemeral=True)
 
         self.stop()
@@ -150,16 +155,26 @@ class VerificationTypeView(discord.ui.View):
             await interaction.response.send_message(f"You already have the {art_role.name} role", ephemeral=True)
 
         else:
-            channel = await create_verification_channel(interaction.user, "art")
+            channel = await create_verification_channel(interaction.user, "art", self.bot.loop)
             await interaction.response.send_message(f'Please follow your recent ping in {channel.mention}', ephemeral=True)
 
         self.stop()
+        
 
 
 class Verification(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        channel = self.bot.get_channel(payload.channel_id)
+        if channel.category.id in Categories.verification:
+            if is_mod(payload.member) and payload.emoji == "🗑️":
+                await channel.delete(reason="Verification couldn't be completed")
+
+
 
     @commands.command(hidden=True)
     @commands.cooldown(1, 60, commands.BucketType.member)
