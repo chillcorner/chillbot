@@ -169,11 +169,15 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        if payload.member == self.bot.user:
+        if payload.user_id == self.user.id:
             return
-        channel = self.bot.get_channel(payload.channel_id)
+
+        channel = self.get_channel(payload.channel_id)
+        if channel is None:
+            return
+
         if channel.category.id == Categories.verification:
-            if is_mod(payload.member) and payload.emoji == "🗑️":
+            if is_mod(payload.member) and payload.emoji.name == "🗑️":
                 await channel.delete(reason="Verification couldn't be completed")
 
 
