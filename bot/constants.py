@@ -205,6 +205,7 @@ class Bot(metaclass=YAMLGetter):
     prefix: str
     token: str
 
+
 class Database(metaclass=YAMLGetter):
     section = 'database'
 
@@ -227,6 +228,15 @@ class Channels(metaclass=YAMLGetter):
     section = "channels"
 
     staff_room: int
+    selfies: int
+    artwork: int
+    pets: int
+
+
+class Whitelists(metaclass=YAMLGetter):
+    section = "whitelists"
+
+    media_only_channels: List[int]
 
 
 class Roles(metaclass=YAMLGetter):

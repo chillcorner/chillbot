@@ -1,8 +1,29 @@
-from datetime import datetime
+
 import discord
 from discord.ext import commands
+from typing import Optional
 
 from bot.cogs.utils import time
+from bot.constants import Channels, Whitelists
+
+
+async def handle_media_only_channel_content(msg):
+    if msg.channel.id in Whitelists.media_only_channels:
+        if msg.attachments:
+            return
+        if type(msg.channel) == discord.Thread:
+            # Ignore texts in a thread
+            return
+
+        if type(msg) != discord.MessageType.default:
+            # Likely system messages
+            return
+
+        try:
+            await msg.delete()
+            await msg.author.send("Please create a thread and post your reply there instead of directly replying to this channel.")
+        except (discord.Forbidden):
+            pass
 
 
 class Duration(time.ShortTime):
@@ -22,6 +43,15 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+
+        if message.guild is None:
+            return
+
+        await handle_media_only_channel_content(message)
+
     @commands.command(aliases=['t'])
     @commands.has_permissions(moderate_members=True)
     async def timeout(self, ctx: commands.Context, members: commands.Greedy[discord.Member], duration: Duration, *, reason: str):
@@ -30,9 +60,9 @@ class Moderation(commands.Cog):
             await m.timeout(duration.dt, reason=reason)
 
     @commands.command(aliases=['st'])
-    async def self_timeout(self, ctx: commands.Context, duration: Duration, *, reason: str):
+    async def self_timeout(self, ctx: commands.Context, duration: Duration, *, reason: Optional[str]):
         """Timeout yourself from 5 minutes to 28 days. Example: !st 2h study"""
-      
+
         await ctx.author.timeout(duration.dt, reason=reason)
 
 
