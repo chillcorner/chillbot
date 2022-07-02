@@ -14,9 +14,9 @@ categories:
 
 channels:
   staff_room: 711567984686137426
-  selfies: &MEDIA_ONLY_CHANNELS 480024884899086336
-  artwork: &MEDIA_ONLY_CHANNELS 477783655813742612
-  pets: &MEDIA_ONLY_CHANNELS 691210347344035890
+  selfies: &SELFIES 480024884899086336
+  artwork: &ARTWORK 477783655813742612
+  pets: &PETS 691210347344035890
 
 roles:
   mod: 445407188375306243
@@ -25,7 +25,9 @@ roles:
 
 whitelists:
   media_channels:
-    - *MEDIA_ONLY_CHANNELS
+    - *SELFIES
+    - *ARTWORK
+    - *PETS
 
 keys:
   openai_key: !ENV "OPENAI_KEY"
