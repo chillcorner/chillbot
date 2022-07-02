@@ -94,7 +94,7 @@ class Snippets(commands.Cog):
         if re.match(IMAGE_URL_PATTERN, url):
             storage_channel = self.bot.get_channel(Channels.storage)
             msg = await storage_channel.send(url)
-
+            msg = await storage_channel.fetch_message(msg.id)
             if msg.attachments:
                 url = msg.attachments[0].url
             else:
