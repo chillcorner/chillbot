@@ -98,7 +98,7 @@ class Snippets(commands.Cog):
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as resp:
                     bytes_data = await resp.read()
-                    msg = await storage_channel.send(discord.File(BytesIO(bytes_data), filename=str(ctx.message.id)))
+                    msg = await storage_channel.send(file=discord.File(BytesIO(bytes_data), filename=str(ctx.message.id)))
 
                     if msg.attachments:
                         url = msg.attachments[0].url
@@ -106,7 +106,7 @@ class Snippets(commands.Cog):
             try:
                 await self.bot.pool.execute("""INSERT INTO snippets(name, approved, title, description, footer, owner_id, storage_id)
                                         VALUES($1, $2, $3, $4, $5, $6, $7)""",
-                                            unique_name, True, None, url, None, ctx.author.id, msg.id)
+                                            unique_name, True, None, url, None, ctx.author.id, str(msg.id))
             except Exception as e:
                 return await ctx.send(f"I couldn't add the snippet: {e}")
 
