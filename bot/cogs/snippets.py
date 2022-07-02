@@ -1,4 +1,5 @@
 import re
+import aiohttp
 import discord
 from discord.ext import commands
 
@@ -93,12 +94,12 @@ class Snippets(commands.Cog):
         url = ref.cached_message.attachments[0].url
         if re.match(IMAGE_URL_PATTERN, url):
             storage_channel = self.bot.get_channel(Channels.storage)
-            msg = await storage_channel.send(url)
-            msg = await storage_channel.fetch_message(msg.id)
-            if msg.attachments:
-                url = msg.attachments[0].url
-            else:
-                return await ctx.send(f"Couldn't upload the file.")
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as resp:
+                    msg = await storage_channel.send(discord.File(resp.read(), filename=str(msg.id)))
+
+                    if msg.attachments:
+                        url = msg.attachments[0].url
 
             try:
                 await self.bot.pool.execute("""INSERT INTO snippets(name, approved, title, description, footer, owner_id, storage_id)
