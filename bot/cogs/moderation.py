@@ -53,8 +53,8 @@ class Moderation(commands.Cog):
 
             if msg.attachments:
                 # auto add default comment thread
-                await msg.channel.create_thread(name="Post your comments here", message=msg)
-                
+                await msg.channel.create_thread(name=f"💬 {msg.author.display_name}'s post comments", message=msg)
+
                                                 
         
         
