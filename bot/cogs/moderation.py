@@ -22,8 +22,8 @@ async def handle_media_only_channel_content(msg):
         try:
             await msg.delete()
             await msg.author.send("Please create a thread and post your reply there instead of directly replying to this channel.")
-        except (discord.Forbidden):
-            pass
+        except discord.HTTPException:
+            pass # Ignore if user has DMs disabled or message is already gone
 
 
 class Duration(time.ShortTime):
