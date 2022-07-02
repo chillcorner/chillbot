@@ -26,7 +26,7 @@ async def handle_media_only_channel_content(msg):
             await msg.delete()
             await msg.author.send("Please create a thread and post your reply there instead of directly replying to this channel.")
         except discord.HTTPException:
-            pass # Ignore if user has DMs disabled or message is already gone
+            pass  # Ignore if user has DMs disabled or message is already gone
             print('Failed to delete message.')
 
 
@@ -47,6 +47,7 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
             return
