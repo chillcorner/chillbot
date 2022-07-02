@@ -7,6 +7,7 @@ from bot.cogs.utils import time
 from bot.constants import Channels, Whitelists
 
 
+
 async def handle_media_only_channel_content(msg):
     if msg.attachments:
         return
@@ -40,15 +41,23 @@ class Moderation(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_message(self, message):
-        if message.author.bot:
+    async def on_message(self, msg):
+        if msg.author.bot:
             return
 
-        if message.guild is None:
+        if msg.guild is None:
             return
         
-        if message.channel.id in Whitelists.media_channels:
-            await handle_media_only_channel_content(message)
+        if msg.channel.id in Whitelists.media_channels:
+            await handle_media_only_channel_content(msg)
+
+            if msg.attachments:
+                # auto add default comment thread
+                await msg.channel.create_thread(name="Post your comments here", message=msg)
+                
+                                                
+        
+        
 
     @commands.command(aliases=['t'])
     @commands.has_permissions(moderate_members=True)
