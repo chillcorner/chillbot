@@ -85,6 +85,8 @@ class Snippets(commands.Cog):
         ref = ctx.message.reference
         if not ref:
             return
+        if not ref.cached_message:
+            return await ctx.send("No message found in bot cache")
         if not ref.attachments:
             return await ctx.send("No image attached.")
 
