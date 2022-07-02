@@ -20,7 +20,7 @@ async def add_channel_remove_option(msg):
     await asyncio.sleep(30*60)
     await msg.add_reaction('🗑️')
 
-async def create_verification_channel(member: discord.Member, verification_type: str, loop: asyncio.AbstractEventLoop):
+async def create_verification_channel(member: discord.Member, verification_type: str):
     cat = member.guild.get_channel(Categories.verification)
 
     mod_role = member.guild.get_role(Roles.mod)
