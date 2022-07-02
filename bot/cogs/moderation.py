@@ -8,7 +8,7 @@ from bot.constants import Channels, Whitelists
 
 
 async def handle_media_only_channel_content(msg):
-    if msg.channel.id in Whitelists.media_only_channels:
+    if msg.channel.id in Whitelists.media_channels:
         if msg.attachments:
             return
         if type(msg.channel) == discord.Thread:

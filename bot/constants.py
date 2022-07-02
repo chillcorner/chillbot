@@ -236,7 +236,7 @@ class Channels(metaclass=YAMLGetter):
 class Whitelists(metaclass=YAMLGetter):
     section = "whitelists"
 
-    media_only_channels: List[int]
+    media_channels: List[int]
 
 
 class Roles(metaclass=YAMLGetter):
