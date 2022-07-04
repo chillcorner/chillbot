@@ -20,6 +20,7 @@ async def add_channel_remove_option(msg):
     await asyncio.sleep(30*60)
     await msg.add_reaction('🗑️')
 
+
 async def create_verification_channel(member: discord.Member, verification_type: str):
     cat = member.guild.get_channel(Categories.verification)
 
@@ -91,6 +92,7 @@ async def create_verification_channel(member: discord.Member, verification_type:
     #     await priv_channel.delete()
     return priv_channel
 
+
 class VerificationView(discord.ui.View):
     def __init__(self, member: discord.Member, verification_type: str):
         super().__init__(timeout=None)
@@ -141,11 +143,13 @@ class VerificationTypeView(discord.ui.View):
         if verified_role in interaction.user.roles:
             await interaction.response.send_message(f"You already have the {verified_role.name} role", ephemeral=True)
         else:
-            channel = await create_verification_channel(interaction.user, "selfie")            
+            channel = await create_verification_channel(interaction.user, "selfie")
             await interaction.response.send_message(f'Please follow your recent ping in {channel.mention}', ephemeral=True)
 
-        self.stop()
+        for item in self.children:
+            item.disabled = True
 
+        await interaction.edit_message(view=self)
 
     @discord.ui.button(label='Art verification', style=discord.ButtonStyle.blurple)
     async def art(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -158,8 +162,10 @@ class VerificationTypeView(discord.ui.View):
             channel = await create_verification_channel(interaction.user, "art")
             await interaction.response.send_message(f'Please follow your recent ping in {channel.mention}', ephemeral=True)
 
-        self.stop()
-        
+        for item in self.children:
+            item.disabled = True
+
+        await interaction.edit_message(view=self)
 
 
 class Verification(commands.Cog):
@@ -180,8 +186,6 @@ class Verification(commands.Cog):
             if is_mod(payload.member) and payload.emoji.name == "🗑️":
                 await channel.delete(reason="Verification couldn't be completed")
 
-
-
     @commands.command(hidden=True)
     @commands.cooldown(1, 60, commands.BucketType.member)
     @commands.guild_only()
@@ -190,7 +194,7 @@ class Verification(commands.Cog):
             return
         await ctx.send("Please select the verification type", view=VerificationTypeView())
 
-    @commands.command(hidden=True)    
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def delete_channel(self, ctx):
         """Removes a verification channel directly"""
