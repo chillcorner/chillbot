@@ -80,38 +80,6 @@ class Snippets(commands.Cog):
         """Snippet commands"""
         pass
 
-    @snippet.command(name="add")
-    @commands.is_owner()
-    async def snippet_add(self, ctx, *, unique_name: str):
-        """Add a snippet"""
-        ref = ctx.message.reference
-        if not ref:
-            return
-        if not ref.cached_message:
-            return await ctx.send("No message found in bot cache")
-        if not ref.cached_message.attachments:
-            return await ctx.send("No image attached.")
-
-        url = ref.cached_message.attachments[0].url
-        if re.match(IMAGE_URL_PATTERN, url):
-            storage_channel = self.bot.get_channel(Channels.storage)
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url) as resp:
-                    bytes_data = await resp.read()
-                    msg = await storage_channel.send(file=discord.File(BytesIO(bytes_data), filename=str(ctx.message.id)))
-
-                    if msg.attachments:
-                        url = msg.attachments[0].url
-
-            try:
-                await self.bot.pool.execute("""INSERT INTO snippets(name, approved, title, description, footer, owner_id, storage_id)
-                                        VALUES($1, $2, $3, $4, $5, $6, $7)""",
-                                            unique_name, True, None, url, None, ctx.author.id, str(msg.id))
-            except Exception as e:
-                return await ctx.send(f"I couldn't add the snippet: {e}")
-
-            await ctx.send(f"Snippet {unique_name} added.")
-
 
 async def setup(bot):
     await bot.add_cog(Snippets(bot))
