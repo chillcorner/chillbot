@@ -147,7 +147,7 @@ class VerificationTypeView(discord.ui.View):
 
         for item in self.children:
             item.disabled = True
-
+        await self.stop()
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label='Art verification', style=discord.ButtonStyle.blurple)
@@ -164,6 +164,7 @@ class VerificationTypeView(discord.ui.View):
         for item in self.children:
             item.disabled = True
 
+        await self.stop()
         await interaction.response.edit_message(view=self)
 
 
