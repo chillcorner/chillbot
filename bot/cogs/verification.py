@@ -134,7 +134,6 @@ class VerificationView(discord.ui.View):
 class VerificationTypeView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
-        self.value = None
 
     @discord.ui.button(label='Selfie verification', style=discord.ButtonStyle.green)
     async def selfie(self, interaction: discord.Interaction, button: discord.ui.Button):
