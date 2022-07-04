@@ -165,7 +165,7 @@ class VerificationTypeView(discord.ui.View):
         for item in self.children:
             item.disabled = True
 
-        await interaction.edit_message(view=self)
+        await interaction.response.edit_message(view=self)
 
 
 class Verification(commands.Cog):
