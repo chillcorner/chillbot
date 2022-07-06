@@ -41,8 +41,9 @@ class PreventRaids(commands.Cog):
 
         if not len(new_members_copy) >= 5:
             # temporary welcome message
-            cc = self.bot.get_guild(Guilds.cc)
-            await cc.system_channel.send(f"Welcome {', '.join([m.mention for m in new_members_copy])}")
+            if new_members_copy:
+                cc = self.bot.get_guild(Guilds.cc)
+                await cc.system_channel.send(f"Welcome {', '.join([m.mention for m in new_members_copy])}")
             return
 
         for member in new_members_copy:
