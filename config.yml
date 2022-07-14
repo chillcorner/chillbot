@@ -12,10 +12,15 @@ guilds:
 categories:
   verification: 987291067240046692
 
+threads:
+  bot_questions: 997008952564912228
+
 channels:
+  
+
   staff_room: 711567984686137426
   storage: 987603378907525120
-  
+
   selfies: &SELFIES 480024884899086336
   artwork: &ARTWORK 477783655813742612
   pets: &PETS 691210347344035890

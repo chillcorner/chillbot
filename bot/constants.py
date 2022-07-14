@@ -233,6 +233,12 @@ class Channels(metaclass=YAMLGetter):
     pets: int
 
 
+class Threads(metaclass=YAMLGetter):
+    section = "threads"
+
+    bot_questions: int
+
+
 class Whitelists(metaclass=YAMLGetter):
     section = "whitelists"
 
