@@ -49,6 +49,7 @@ class OpenAI(commands.Cog):
             return
         if ctx.channel.id != thread_channel.id:
             await ctx.send(f"This command is only available in {thread_channel.mention}.", delete_after=4.0)
+            return
 
         return True
 
