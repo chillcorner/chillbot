@@ -44,7 +44,7 @@ class OpenAI(commands.Cog):
             return
 
         # available under a channel called ask-bot-anything thread only
-        thread_channel = ctx.guild.get_channel(Threads.bot_questions)
+        thread_channel = ctx.guild.get_thread(Threads.bot_questions)
         if not thread_channel:
             return
         if ctx.channel.id != thread_channel.id:
