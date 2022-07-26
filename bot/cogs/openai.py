@@ -139,7 +139,7 @@ class OpenAI(commands.Cog):
         if topic:
             prompt = clean_message(topic)
 
-        prompt = "Tell me a random fact" if not topic else f"Tell me a fact about {topic}."
+        prompt = "Tell me a random fact" if not topic else f"Tell me a fact about {prompt}."
 
         async with ctx.channel.typing():
             func = functools.partial(self.get_openapi_response,
