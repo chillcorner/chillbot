@@ -46,7 +46,7 @@ class OpenAI(commands.Cog):
         role_names = [r.name for r in ctx.author.roles if "lvl" in r.name]
         if not role_names:
             return
-        level = [int(r.split()[1] for r in role_names)]
+        level = [int(r.split()[1]) for r in role_names]
 
         if level and max(level) >= 5:
             return True
