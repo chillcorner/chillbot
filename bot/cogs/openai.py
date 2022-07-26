@@ -43,15 +43,23 @@ class OpenAI(commands.Cog):
         if ctx.guild.id != Guilds.cc:
             return
 
-        # available under a channel called ask-bot-anything thread only
-        thread_channel = ctx.guild.get_thread(Threads.bot_questions)
-        if not thread_channel:
+        role_names = [r.name for r in ctx.author.roles if "lvl" in r.name]
+        if not role_names:
             return
-        if ctx.channel.id != thread_channel.id:
-            await ctx.send(f"This command is only available in {thread_channel.mention}.", delete_after=4.0)
-            return
+        level = [int(r.split()[1] for r in role_names)]
 
-        return True
+        if level and max(level) >= 5:
+            return True
+
+        # available under a channel called ask-bot-anything thread only
+        # thread_channel = ctx.guild.get_thread(Threads.bot_questions)
+        # if not thread_channel:
+        #     return
+        # if ctx.channel.id != thread_channel.id:
+        #     await ctx.send(f"This command is only available in {thread_channel.mention}.", delete_after=4.0)
+        #     return
+
+        return
 
     def get_openapi_response(self, *, prompt, stop, tokens, temperature=0.7, frequency_penalty=0, presence_penalty=0):
         """
