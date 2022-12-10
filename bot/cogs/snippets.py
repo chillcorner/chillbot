@@ -1,7 +1,7 @@
 import re
 import discord
 from discord.ext import commands
-from discord.ext.commands import BucketType, CooldownMapping
+from discord.ext.commands import BucketType, CooldownMapping, CommandOnCooldown
 
 from bot.constants import Channels, Guilds
 
@@ -43,7 +43,10 @@ class Snippets(commands.Cog):
         mentions_str = " ".join([m.mention for m in msg.mentions])
         cmd = re.sub(r'<@(!?)([0-9]*)>', '', title).strip()
 
-        row = await self.bot.pool.fetchrow("""SELECT * FROM snippets WHERE name = $1""", cmd)
+
+        query = """SELECT * FROM snippets WHERE name = $1"""
+        row = await self.bot.pool.fetchrow(query, cmd)
+
         if not row:
             return
 
@@ -51,7 +54,8 @@ class Snippets(commands.Cog):
         on_cooldown = await self.is_on_snippet_cooldown(msg)
         
         if on_cooldown:
-            raise commands.CommandOnCooldown(DEFAULT_COOLDOWN, on_cooldown, BucketType.channel)            
+            error_msg = f"Please wait {on_cooldown:.2f}s before using this command again."   
+            return await msg.channel.send(error_msg, reference=msg, delete_after=10.0)     
 
         approved = row.get('approved', False)
         title = row.get('title', None)

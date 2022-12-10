@@ -107,6 +107,11 @@ class ChillBot(commands.Bot):
         super().__init__(*args, **kwargs)
         self.start_time = dt.datetime.now()
 
+
+    async def on_error(self, event_method, *args, **kwargs):
+        print(f'An error occurred while running {event_method}.')
+
+    
     async def on_command_error(self, ctx, exception):
         if isinstance(exception, commands.CommandNotFound):
             return
