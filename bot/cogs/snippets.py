@@ -1,30 +1,36 @@
-from io import BytesIO
 import re
-import aiohttp
 import discord
 from discord.ext import commands
+from discord.ext.commands import BucketType, CooldownMapping
 
-from bot.constants import Channels
+from bot.constants import Channels, Guilds
 
 IMAGE_URL_PATTERN = re.compile(
     r'(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|svg)', re.IGNORECASE)
 
+DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 30, BucketType.channel)
 
 class Snippets(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
-        self.snippets_cd = commands.CooldownMapping.from_cooldown(
-            1, 30, commands.BucketType.channel)
+        self.bot = bot        
 
-    async def is_on_snippet_cooldown(self, msg):
-        # channel specific cooldown
-        bucket = self.snippets_cd.get_bucket(msg)
+    async def is_on_snippet_cooldown(self, msg: discord.Message):        
+        bucket = DEFAULT_COOLDOWN.get_bucket(msg)
         return bucket.update_rate_limit()
 
     @commands.Cog.listener()
     async def on_message(self, msg):
         if msg.author.bot:
             return
+
+        # ignore dms
+        if not msg.guild:
+            return
+        
+        # chill corner only
+        if msg.channel.id != Guilds.cc:
+            return
+        
 
         if not msg.content.startswith(';'):
             return
@@ -39,28 +45,24 @@ class Snippets(commands.Cog):
 
         row = await self.bot.pool.fetchrow("""SELECT * FROM snippets WHERE name = $1""", cmd)
         if not row:
-            return  # await msg.channel.send(f"Found nothing.")
+            return
 
         # check for cooldown
         on_cooldown = await self.is_on_snippet_cooldown(msg)
+        
         if on_cooldown:
-            cd_msg = f"This channel is on cooldown. Try again in {round(on_cooldown, 2)}s {msg.author.mention}"
-            try:
-                await msg.delete()
-            except discord.NotFound:
-                pass
-            finally:
-                return await msg.channel.send(cd_msg, delete_after=5.0)
+            raise commands.CommandOnCooldown(DEFAULT_COOLDOWN, on_cooldown, BucketType.channel)            
 
-        approved = row['approved']
-        title = row['title']
-        description = row['description']
-        footer = row['footer']
+        approved = row.get('approved', False)
+        title = row.get('title', None)
+        description = row.get('description', None)
+        footer = row.get('footer', None)
 
         if not approved:
             return await msg.channel.send("This snippet is not approved yet.")
 
         embed = discord.Embed(color=discord.Color.red())
+
         if re.match(IMAGE_URL_PATTERN, description):
             embed.set_image(url=description)
             embed.title = title if title else None
@@ -71,14 +73,9 @@ class Snippets(commands.Cog):
         if footer:
             embed.set_footer(text=footer)
 
-        # send snippet
-        tmp_msg = await msg.channel.send(reference=msg, embed=embed)
+        ref = msg.reference if msg.reference else msg
 
-    @commands.group(name="snippet", invoke_without_command=False)
-    @commands.cooldown(1, 30, commands.BucketType.user)
-    async def snippet(self, ctx):
-        """Snippet commands"""
-        pass
+        await msg.channel.send(content=mentions_str, reference=ref, embed=embed)
 
 
 async def setup(bot):
