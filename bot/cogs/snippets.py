@@ -11,7 +11,7 @@ from bot.constants import Channels, Guilds
 IMAGE_URL_PATTERN = re.compile(
     r'(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|svg)', re.IGNORECASE)
 
-DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 30, BucketType.channel)
+DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 20, BucketType.channel)
 
 class SnippetDoesNotExist(commands.CommandError):
     pass
