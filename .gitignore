@@ -1,0 +1,10 @@
+**/.idea
+**/__pycache__
+venv/
+config_test.yml
+*.log
+*.pyc
+/.venv/
+/.git/
+test.py
+test/

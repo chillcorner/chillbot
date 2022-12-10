@@ -1,0 +1,43 @@
+bot:
+  prefix: "!"
+  token: !ENV "BOT_TOKEN"
+  description: "A minimal general purpose bot for Chill Corner discord server"
+
+database:
+  pgsql_string: !ENV "PGSQL_STRING"
+
+guilds:
+  cc: 444470893599784960
+
+categories:
+  verification: 987291067240046692
+
+threads:
+  bot_questions: 997008952564912228
+
+channels:
+  
+
+  staff_room: 711567984686137426
+  storage: 987603378907525120
+
+  selfies: &SELFIES 480024884899086336
+  artwork: &ARTWORK 477783655813742612
+  pets: &PETS 691210347344035890
+
+roles:
+  mod: 445407188375306243
+  verified: 480030345916317746
+  artist: 525019822728282113
+
+whitelists:
+  media_channels:
+    - *SELFIES
+    - *ARTWORK
+    - *PETS
+
+keys:
+  openai_key: !ENV "OPENAI_KEY"
+
+config:
+  required_keys: ["bot.token"]
