@@ -14,9 +14,13 @@ def get_random_code():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5))
 
 
-async def add_channel_remove_option(msg):
-    await asyncio.sleep(30*60)
-    await msg.add_reaction('🗑️')
+async def remove_channel_after(duration: int, member: discord.Member, channel: discord.TextChannel):
+    await asyncio.sleep(duration)
+    if channel and member:
+        last_20_msgs = [m async for m in channel.history(limit=20) if m.author == member]
+        # check if the user has sent any attachments in the last 20 messages
+        if not any(m.attachments for m in last_20_msgs):
+            await channel.delete(reason="Verification channel expired")
 
 
 async def create_verification_channel(member: discord.Member, verification_type: str):
@@ -81,13 +85,7 @@ async def create_verification_channel(member: discord.Member, verification_type:
     _msg = await priv_channel.send(embed=embed, content=member.mention, view=VerificationView(member, verification_type))
     await _msg.add_reaction('🗑️')
 
-    # await asyncio.sleep(60*25)
-    # if priv_channel:
-    #     last_20 = await priv_channel.history(limit=20).flatten()
-    #     for msg in last_20:
-    #         if msg.author == member and len(msg.attachments) >= 1:
-    #             return
-    #     await priv_channel.delete()
+    await remove_channel_after(30 * 60, member, priv_channel)
     return priv_channel
 
 
