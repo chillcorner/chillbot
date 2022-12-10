@@ -1,9 +1,7 @@
 import asyncio
 import random
-import re
 import string
 import discord
-import openai
 from discord.ext import commands
 from bot.constants import Guilds, Roles, Categories
 

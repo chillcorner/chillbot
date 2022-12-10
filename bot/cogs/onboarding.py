@@ -2,7 +2,6 @@ import asyncio
 
 import discord
 from discord.ext import commands
-from discord.utils import get
 from discord.ext import tasks
 
 
@@ -30,7 +29,7 @@ class Onboarding(commands.Cog):
         if member.guild.id != Guilds.cc:
             return
 
-        self.new_members.append(member)
+        self.new_members_queue.append(member)
 
     @tasks.loop(seconds=3)
     async def join_watcher(self):
