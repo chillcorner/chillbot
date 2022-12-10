@@ -60,7 +60,7 @@ class Snippets(commands.Cog):
         cmd = re.sub(r'<@(!?)([0-9]*)>', '', title).strip()
 
         # mongodb stuff
-        snippet = self.snippet_exists(cmd)
+        snippet = await self.snippet_exists(cmd)
         if not snippet:
             return 
 
@@ -159,7 +159,7 @@ class Snippets(commands.Cog):
     async def snippet_info(self, ctx, *, name: str):
         """Shows information about a snippet."""
 
-        snippet = self.snippet_exists(name)
+        snippet = await self.snippet_exists(name)
         if not snippet:
             raise SnippetDoesNotExist("This snippet does not exist")
 
@@ -233,7 +233,8 @@ class Snippets(commands.Cog):
     async def snippet_approve(self, ctx, *, name: str):
         """Approves a snippet."""
 
-        if not self.snippet_exists(name):
+        snippet = await self.snippet_exists(name)
+        if not snippet:
             raise SnippetDoesNotExist("This snippet does not exist")
 
         await self.collection.update_one({'name': name}, {'$set': {'approved': True}})
@@ -244,7 +245,8 @@ class Snippets(commands.Cog):
     async def snippet_unapprove(self, ctx, *, name: str):
         """Unapproves a snippet."""
 
-        if not self.snippet_exists(name):
+        snippet = await self.snippet_exists(name)
+        if not snippet:
             raise SnippetDoesNotExist("This snippet does not exist")
 
         await self.collection.update_one({'name': name}, {'$set': {'approved': False}})
@@ -255,7 +257,8 @@ class Snippets(commands.Cog):
     async def snippet_delete(self, ctx, *, name: str):
         """Deletes a snippet."""
 
-        if not self.snippet_exists(name):
+        snippet = await self.snippet_exists(name)
+        if not snippet:
             raise SnippetDoesNotExist("This snippet does not exist")
 
         await self.collection.delete_one({'name': name})
