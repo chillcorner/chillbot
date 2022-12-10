@@ -24,7 +24,7 @@ intents.presences = True
 
 # extensions to load
 bot_extensions = [
-    'cogs.raids',
+    'cogs.onboarding',
     'cogs.openai',
     'cogs.verification',
     'cogs.moderation',

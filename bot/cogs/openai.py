@@ -45,33 +45,11 @@ class OpenAI(commands.Cog):
             return
 
         # disable all commands for now
-        return False
+        return False # return True to allow commands
 
-        # # allow commands to be used in the CC server owner
-        # if ctx.author.id == self.bot.application_info().owner.id:
-        #     return True
-        #     return True
+      
+        
 
-        # if not self.cmd_enabled:
-        #     return await ctx.send(f"{ctx.author.mention} This command is temporarily disabled.", delete_after=6)
-
-        # role_names = [r.name for r in ctx.author.roles if "lvl" in r.name]
-        # if not role_names:
-        #     return
-        # level = [int(r.split()[1]) for r in role_names]
-
-        # if level and max(level) >= 5:
-        #     return True
-
-        # available under a channel called ask-bot-anything thread only
-        # thread_channel = ctx.guild.get_thread(Threads.bot_questions)
-        # if not thread_channel:
-        #     return
-        # if ctx.channel.id != thread_channel.id:
-        #     await ctx.send(f"This command is only available in {thread_channel.mention}.", delete_after=4.0)
-        #     return
-
-        return True
 
     def get_openapi_response(self, *, prompt, stop, tokens, temperature=0.7, frequency_penalty=0, presence_penalty=0):
         """
@@ -79,7 +57,7 @@ class OpenAI(commands.Cog):
         """
 
         response = openai.Completion.create(
-            engine="text-davinci-002",
+            engine="text-davinci-003",
             prompt=prompt,
             temperature=temperature,
             max_tokens=tokens,
