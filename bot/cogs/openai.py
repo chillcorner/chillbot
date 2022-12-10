@@ -44,6 +44,9 @@ class OpenAI(commands.Cog):
         if ctx.guild.id != Guilds.cc:
             return
 
+        # disable all commands for now
+        return False
+
         # # allow commands to be used in the CC server owner
         # if ctx.author.id == self.bot.application_info().owner.id:
         #     return True
@@ -161,7 +164,7 @@ class OpenAI(commands.Cog):
             func = functools.partial(self.get_openapi_response,
                                      prompt=f"{prompt}\nfact:",
                                      stop="Fact:", tokens=60)
-            res = await self.bot.loop.run_in_executor(None, func)
+            res = await self.bot.loop.run_in_executor(None, func) 
 
             await ctx.reply(res)
 
