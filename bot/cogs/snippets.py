@@ -70,7 +70,7 @@ class Snippets(commands.Cog):
 
         embed = discord.Embed(color=discord.Color.red())
 
-        if snippet_type == 'image':
+        if snippet_type == 'link':
             embed.set_image(url=content)
             embed.title = title if title else None
         else:
