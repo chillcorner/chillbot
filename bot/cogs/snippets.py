@@ -137,7 +137,7 @@ class Snippets(commands.Cog):
             'approved': True,            
             'title': None,
             'footer': None,
-            'created_at': datetime.utcnow(),
+            'created_at': datetime.datetime.utcnow(),
             'owner_id': ctx.author.id,
             'storage_id': storage_id
 
