@@ -203,6 +203,26 @@ class Snippets(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @snippet.command(name="search")
+    async def snippet_search(self, ctx, *, query: str):
+        """Searches for a snippet."""
+
+        collection = self.bot.db.snippets
+        # fuzzy search for the snippet
+        snippets = await collection.find({'name': {'$regex': query, '$options': 'i'}}).to_list(None)
+
+        if not snippets:
+            return await ctx.send("No snippets found.")
+
+        embed = discord.Embed(color=discord.Color.red())
+        embed.title = 'Search results'
+
+        # send top 10 results
+        for i, snippet in enumerate(snippets[:10]):
+            embed.add_field(name=f'{i + 1}. {snippet.get("name")}', value=f"Uses: {snippet.get('uses', 0)}")
+        
+        await ctx.send(embed=embed)
+
     @snippet.command(name='approve')
     @commands.has_any_role('Mod', 'Staff')
     async def snippet_approve(self, ctx, *, name: str):
