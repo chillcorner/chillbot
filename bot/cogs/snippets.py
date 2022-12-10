@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import os
 import re
-from typing import Optional
+from typing import Optional, Union
 import discord
 from discord.ext import commands
 from discord.ext.commands import BucketType, CooldownMapping, CommandOnCooldown
@@ -223,6 +223,26 @@ class Snippets(commands.Cog):
                             value=f"Uses: {snippet.get('uses', 0)}")
 
         await ctx.send(embed=embed, reference=ctx.message)
+
+    @snippet.command(name='user')
+    async def snippet_user(self, ctx, *, user: Union[discord.Member, discord.User]):
+        """Shows a user's snippets."""
+
+        # top 10 results
+        snippets = await self.bot.snippets.find({'owner_id': user.id}).sort('uses', -1).limit(10).to_list(None)
+
+        if not snippets:
+            return await ctx.send("No snippets found.", reference=ctx.message)
+
+        embed = discord.Embed(color=discord.Color.red())
+        embed.title = f'{user}\'s snippets'
+
+        for i, snippet in enumerate(snippets):
+            embed.add_field(name=f'{i + 1}. {snippet.get("name")}',
+                            value=f"Uses: {snippet.get('uses', 0)}")
+
+        await ctx.send(embed=embed, reference=ctx.message)
+
 
     @snippet.command(name='approve')
     @commands.has_any_role('Mod', 'Staff')
