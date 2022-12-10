@@ -128,6 +128,7 @@ class ChillBot(commands.Bot):
 
         elif isinstance(exception, commands.CommandOnCooldown):
             await ctx.send(exception)
+        
 
         elif isinstance(exception, asyncio.TimeoutError):
             return

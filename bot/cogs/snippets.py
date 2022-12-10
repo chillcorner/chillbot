@@ -13,11 +13,17 @@ IMAGE_URL_PATTERN = re.compile(
 
 DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 30, BucketType.channel)
 
+class SnippetDoesNotExist(commands.ArgumentParsingError):
+    pass
+    
+
+
+
 class Snippets(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot        
+        self.bot = bot
 
-    async def is_on_snippet_cooldown(self, msg: discord.Message):        
+    async def is_on_snippet_cooldown(self, msg: discord.Message):
         bucket = DEFAULT_COOLDOWN.get_bucket(msg)
         return bucket.update_rate_limit()
 
@@ -29,11 +35,10 @@ class Snippets(commands.Cog):
         # ignore dms
         if not msg.guild:
             return
-        
+
         # chill corner only
         if msg.guild.id != Guilds.cc:
             return
-        
 
         if not msg.content.startswith(';'):
             return
@@ -46,27 +51,24 @@ class Snippets(commands.Cog):
         mentions_str = " ".join([m.mention for m in msg.mentions])
         cmd = re.sub(r'<@(!?)([0-9]*)>', '', title).strip()
 
-
         # mongodb stuff
         collection = self.bot.db.snippets
         snippet = await collection.find_one({'name': cmd})
         if not snippet:
             return
-        
 
         # check for cooldown
         on_cooldown = await self.is_on_snippet_cooldown(msg)
-        
+
         if on_cooldown:
-            error_msg = f"Please wait {on_cooldown:.2f}s before using this command again."   
-            return await msg.channel.send(error_msg, reference=msg, delete_after=10.0)     
+            error_msg = f"Please wait {on_cooldown:.2f}s before using this command again."
+            return await msg.channel.send(error_msg, reference=msg, delete_after=10.0)
 
         approved = snippet.get('approved', False)
         title = snippet.get('title', None)
         content = snippet.get('content', None)
         footer = snippet.get('footer', None)
         snippet_type = snippet.get('type', None)
-        
 
         if not approved:
             return await msg.channel.send("This snippet is not approved yet.")
@@ -88,6 +90,9 @@ class Snippets(commands.Cog):
 
         await msg.channel.send(content=mentions_str, reference=ref, embed=embed)
 
+        # increment uses by one
+        await collection.update_one({'name': cmd}, {'$inc': {'uses': 1}})
+
     @commands.group(name='snippet', invoke_without_command=False)
     async def snippet(self, ctx):
         pass
@@ -107,8 +112,8 @@ class Snippets(commands.Cog):
             return await ctx.send("Snippet with this name already exists.")
 
         # get the CDN link from the attachment
-        if ctx.message.attachments:         
-            
+        if ctx.message.attachments:
+
             # get the image file extension from the URL
             ext = ctx.message.attachments[0].url.split('.')[-1]
 
@@ -119,22 +124,21 @@ class Snippets(commands.Cog):
             await ctx.message.attachments[0].save(fp=f'./temp/{name}.{ext}')
             storage_msg = await self.bot.get_channel(Channels.storage).send(file=discord.File(f'./temp/{name}.{ext}'))
             storage_id = storage_msg.attachments[0].id
-             
+
             content = storage_msg.attachments[0].url
             snippet_type = 'link'
-            
+
         else:
             content = content.strip()
             snippet_type = 'text'
             storage_id = None
-       
-        
+
         # add the snippet
         await collection.insert_one({
             'name': name,
             'type': snippet_type,
             'content': content,
-            'approved': True,            
+            'approved': True,
             'title': None,
             'footer': None,
             'created_at': datetime.datetime.utcnow(),
@@ -145,15 +149,14 @@ class Snippets(commands.Cog):
 
         await ctx.send("Snippet added successfully.")
 
-
     @snippet.command(name='info')
     async def snippet_info(self, ctx, *, name: str):
         """Shows information about a snippet."""
-            
+
         collection = self.bot.db.snippets
         snippet = await collection.find_one({'name': name})
         if not snippet:
-            return await ctx.send("Snippet with this name does not exist.")
+            raise SnippetDoesNotExist("Snippet with this name does not exist.")
 
         snippet_type = snippet.get('type', None)
 
@@ -162,7 +165,7 @@ class Snippets(commands.Cog):
         if snippet_type == 'link':
             embed.set_image(url=snippet.get('content'))
         else:
-            embed.description = snippet.get('content')            
+            embed.description = snippet.get('content')
 
         # get member
         member = ctx.guild.get_member(snippet.get('owner_id'))
@@ -175,15 +178,15 @@ class Snippets(commands.Cog):
         embed.add_field(name='Uses', value=snippet.get('uses', 0))
 
         embed.add_field(name='Approved', value=snippet.get('approved'))
-        
-        embed.add_field(name='Created at', value=snippet.get('created_at').strftime('%d/%m/%Y %H:%M:%S'))
-        
+
+        embed.add_field(name='Created at', value=snippet.get(
+            'created_at').strftime('%d/%m/%Y %H:%M:%S'))
+
         footer = snippet.get('footer', None)
         if footer:
             embed.set_footer(text=footer)
 
         await ctx.send(embed=embed, reference=ctx.message)
-
 
     @snippet.command(name='approve')
     @commands.has_any_role('Mod', 'Staff')
@@ -193,7 +196,7 @@ class Snippets(commands.Cog):
         collection = self.bot.db.snippets
         snippet = await collection.find_one({'name': name})
         if not snippet:
-            return await ctx.send("Snippet with this name does not exist.")
+            raise SnippetDoesNotExist("Snippet with this name does not exist.")
 
         await collection.update_one({'name': name}, {'$set': {'approved': True}})
         await ctx.send("Snippet approved successfully.")
@@ -206,7 +209,7 @@ class Snippets(commands.Cog):
         collection = self.bot.db.snippets
         snippet = await collection({'name': name})
         if not snippet:
-            return await ctx.send("Snippet with this name does not exist.")
+            raise SnippetDoesNotExist("Snippet with this name does not exist.")
 
         await collection.update_one({'name': name}, {'$set': {'approved': False}})
         await ctx.send("Snippet unapproved successfully.")
@@ -219,7 +222,7 @@ class Snippets(commands.Cog):
         collection = self.bot.db.snippets
         snippet = await collection.find_one({'name': name})
         if not snippet:
-            return await ctx.send("Snippet with this name does not exist.")
+            raise SnippetDoesNotExist("Snippet with this name does not exist.")
 
         await collection.delete_one({'name': name})
         await ctx.send("Snippet deleted successfully.")
