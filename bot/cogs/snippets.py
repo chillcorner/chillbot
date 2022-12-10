@@ -207,7 +207,7 @@ class Snippets(commands.Cog):
         """Unapproves a snippet."""
 
         collection = self.bot.db.snippets
-        snippet = await collection({'name': name})
+        snippet = await collection.find_one({'name': name})
         if not snippet:
             return await ctx.send("Snippet with this name does not exist.")
 
