@@ -10,6 +10,7 @@ import discord
 
 from discord.ext import commands
 from discord.utils import get
+from bot.exceptions import SnippetDoesNotExist
 from motor import motor_asyncio
 
 from bot.constants import Bot, Database
@@ -117,6 +118,7 @@ class ChillBot(commands.Bot):
 
     
     async def on_command_error(self, ctx, exception):
+
         if isinstance(exception, commands.CommandNotFound):
             return
 
@@ -127,6 +129,10 @@ class ChillBot(commands.Bot):
             ctx.command.reset_cooldown(ctx)
 
         elif isinstance(exception, commands.CommandOnCooldown):
+            await ctx.send(exception)
+
+        # custom exceptions
+        elif isinstance(exception, SnippetDoesNotExist):
             await ctx.send(exception)
         
 
