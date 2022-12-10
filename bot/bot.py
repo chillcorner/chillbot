@@ -10,6 +10,7 @@ import discord
 
 from discord.ext import commands
 from discord.utils import get
+from motor import motor_asyncio
 
 from bot.constants import Bot, Database
 
@@ -93,13 +94,16 @@ async def run_bot():
                 await bot.load_extension(f"bot.{ext}")
                 print(f"{n + 1}. Loaded extension: [{ext}]")
 
-            pool = await asyncpg.create_pool(Database.pgsql_string)
-            bot.pool = pool
+            # pool = await asyncpg.create_pool(Database.pgsql_string)
+            client = motor_asyncio.AsyncIOMotorClient(Database.mongodb_string)
+            bot.db = client.snippetsdb
 
             await bot.start(Bot.token, reconnect=True)
 
     except KeyboardInterrupt:
+        bot.db.close()
         await bot.logout()
+
 
 
 class ChillBot(commands.Bot):

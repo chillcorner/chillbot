@@ -44,11 +44,12 @@ class Snippets(commands.Cog):
         cmd = re.sub(r'<@(!?)([0-9]*)>', '', title).strip()
 
 
-        query = """SELECT * FROM snippets WHERE name = $1"""
-        row = await self.bot.pool.fetchrow(query, cmd)
-
-        if not row:
+        # mongodb stuff
+        collection = self.bot.db.snippets
+        snippet = await collection.find_one({'name': cmd})
+        if not snippet:
             return
+        
 
         # check for cooldown
         on_cooldown = await self.is_on_snippet_cooldown(msg)
@@ -57,22 +58,25 @@ class Snippets(commands.Cog):
             error_msg = f"Please wait {on_cooldown:.2f}s before using this command again."   
             return await msg.channel.send(error_msg, reference=msg, delete_after=10.0)     
 
-        approved = row.get('approved', False)
-        title = row.get('title', None)
-        description = row.get('description', None)
-        footer = row.get('footer', None)
+        approved = snippet.get('approved', False)
+        title = snippet.get('title', None)
+        content = snippet.get('content', None)
+        footer = snippet.get('footer', None)
+        snippet_type = snippet.get('type', None)
+        
 
         if not approved:
             return await msg.channel.send("This snippet is not approved yet.")
 
         embed = discord.Embed(color=discord.Color.red())
 
-        if re.match(IMAGE_URL_PATTERN, description):
-            embed.set_image(url=description)
+        if snippet_type == 'image':
+            embed.set_image(url=content)
             embed.title = title if title else None
         else:
+            # textual snippet
             embed.title = title
-            embed.description = description
+            embed.description = content
 
         if footer:
             embed.set_footer(text=footer)

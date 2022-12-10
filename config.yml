@@ -4,6 +4,7 @@ bot:
   description: "A minimal general purpose bot for Chill Corner discord server"
 
 database:
+  mongodb_string: !ENV "MONGODB_STRING"
   pgsql_string: !ENV "PGSQL_STRING"
 
 guilds:

@@ -210,6 +210,7 @@ class Database(metaclass=YAMLGetter):
     section = 'database'
 
     pgsql_string: str
+    mongodb_string: str
 
 
 class Guilds(metaclass=YAMLGetter):
