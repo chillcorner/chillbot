@@ -112,6 +112,7 @@ class Snippets(commands.Cog):
 
         snippet = await self.snippet_exists(name)
         if snippet:
+            raise SnippetDoesNotExist(f"Snippet with this name already exists.")
             return await ctx.send("Snippet with this name already exists.", reference=ctx.message)
 
         # get the CDN link from the attachment
