@@ -18,7 +18,10 @@ DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 30, BucketType.channel)
 class Snippets(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.collection = bot.db.snippets
+        self.collection = None
+
+    async def on_connect(self):
+        self.collection = self.bot.db.snippets
 
     async def is_on_snippet_cooldown(self, msg: discord.Message):
         bucket = DEFAULT_COOLDOWN.get_bucket(msg)
