@@ -28,7 +28,7 @@ class Snippets(commands.Cog):
             return
         
         # chill corner only
-        if msg.channel.id != Guilds.cc:
+        if msg.guild.id != Guilds.cc:
             return
         
 
