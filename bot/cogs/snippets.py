@@ -188,6 +188,21 @@ class Snippets(commands.Cog):
 
         await ctx.send(embed=embed, reference=ctx.message)
 
+    @snippet.command(name='leaderboard')
+    async def snippet_leaderboard(self, ctx):
+        """Shows the snippet leaderboard."""
+
+        collection = self.bot.db.snippets
+        snippets = await collection.find({}).sort('uses', -1).limit(10).to_list(None)
+
+        embed = discord.Embed(color=discord.Color.red())
+        embed.title = 'Snippet leaderboard'
+
+        for i, snippet in enumerate(snippets):         
+            embed.add_field(name=f'{i + 1}. {snippet.get("name")}', value=f"Uses: {snippet.get('uses', 0)}")
+
+        await ctx.send(embed=embed)
+
     @snippet.command(name='approve')
     @commands.has_any_role('Mod', 'Staff')
     async def snippet_approve(self, ctx, *, name: str):
