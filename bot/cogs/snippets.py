@@ -13,7 +13,7 @@ IMAGE_URL_PATTERN = re.compile(
 
 DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 30, BucketType.channel)
 
-class SnippetDoesNotExist(commands.ArgumentParsingError):
+class SnippetDoesNotExist(commands.CommandError):
     pass
     
 
@@ -196,7 +196,7 @@ class Snippets(commands.Cog):
         collection = self.bot.db.snippets
         snippet = await collection.find_one({'name': name})
         if not snippet:
-            raise SnippetDoesNotExist("Snippet with this name does not exist.")
+            return await ctx.send("Snippet with this name does not exist.")
 
         await collection.update_one({'name': name}, {'$set': {'approved': True}})
         await ctx.send("Snippet approved successfully.")
@@ -209,7 +209,7 @@ class Snippets(commands.Cog):
         collection = self.bot.db.snippets
         snippet = await collection({'name': name})
         if not snippet:
-            raise SnippetDoesNotExist("Snippet with this name does not exist.")
+            return await ctx.send("Snippet with this name does not exist.")
 
         await collection.update_one({'name': name}, {'$set': {'approved': False}})
         await ctx.send("Snippet unapproved successfully.")
@@ -222,7 +222,7 @@ class Snippets(commands.Cog):
         collection = self.bot.db.snippets
         snippet = await collection.find_one({'name': name})
         if not snippet:
-            raise SnippetDoesNotExist("Snippet with this name does not exist.")
+            return await ctx.send("Snippet with this name does not exist.")
 
         await collection.delete_one({'name': name})
         await ctx.send("Snippet deleted successfully.")
