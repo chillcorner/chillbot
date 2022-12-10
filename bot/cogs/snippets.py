@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import os
 import re
@@ -21,6 +22,7 @@ class Snippets(commands.Cog):
         self.collection = None
 
     async def on_connect(self):
+        await asyncio.sleep(1)
         self.collection = self.bot.db.snippets
 
     async def is_on_snippet_cooldown(self, msg: discord.Message):
@@ -58,10 +60,9 @@ class Snippets(commands.Cog):
         cmd = re.sub(r'<@(!?)([0-9]*)>', '', title).strip()
 
         # mongodb stuff
-
-        snippet = await self.collection.find_one({'name': cmd})
-        if not self.snippet_exists(name):
-            return
+        snippet = self.snippet_exists(cmd)
+        if not snippet:
+            return 
 
         # check for cooldown
         on_cooldown = await self.is_on_snippet_cooldown(msg)
@@ -113,7 +114,7 @@ class Snippets(commands.Cog):
 
          # check if snippet already exists
 
-        if snippet:
+        if self.snippet_exists(name):
             return await ctx.send("Snippet with this name already exists.", reference=ctx.message)
 
         # get the CDN link from the attachment
