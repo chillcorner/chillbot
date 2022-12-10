@@ -6,7 +6,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 from discord.ext.commands import BucketType, CooldownMapping, CommandOnCooldown
-from bot.exceptions import SnippetDoesNotExist
+from bot.exceptions import SnippetDoesNotExist, SnippetExists
 from bot.constants import Channels, Guilds
 
 IMAGE_URL_PATTERN = re.compile(
@@ -110,8 +110,8 @@ class Snippets(commands.Cog):
 
         snippet = await self.snippet_exists(name)
 
-        if not snippet:
-            raise SnippetDoesNotExist()
+        if snippet:
+            raise SnippetExists()
 
         # get the CDN link from the attachment
         if ctx.message.attachments:

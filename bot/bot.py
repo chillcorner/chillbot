@@ -9,7 +9,7 @@ import discord
 
 from discord.ext import commands
 from discord.utils import get
-from bot.exceptions import SnippetDoesNotExist
+from bot.exceptions import SnippetDoesNotExist, SnippetExists
 from motor import motor_asyncio
 
 from bot.constants import Bot, Database
@@ -135,6 +135,8 @@ class ChillBot(commands.Bot):
         elif isinstance(exception, SnippetDoesNotExist):
             await ctx.send(f"Snippet with this name does not exist.", reference=ctx.message)
         
+        elif isinstance(exception, SnippetExists):
+            await ctx.send(f"Snippet with this name already exists.", reference=ctx.message)
 
         elif isinstance(exception, asyncio.TimeoutError):
             return
