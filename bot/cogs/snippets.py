@@ -1,4 +1,7 @@
+import datetime
+import os
 import re
+from typing import Optional
 import discord
 from discord.ext import commands
 from discord.ext.commands import BucketType, CooldownMapping, CommandOnCooldown
@@ -84,6 +87,142 @@ class Snippets(commands.Cog):
         ref = msg.reference if msg.reference else msg
 
         await msg.channel.send(content=mentions_str, reference=ref, embed=embed)
+
+    @commands.group(name='snippet', invoke_without_command=False)
+    async def snippet(self, ctx):
+        pass
+
+    @snippet.command(name='add')
+    async def snippet_add(self, ctx, name, *, content: Optional[str] = None):
+        """Adds a snippet to the database."""
+
+        # check if either the content is a text or there's an attachment
+        if not content and not ctx.message.attachments:
+            return await ctx.send("Please add a text or an attachment.")
+
+         # check if snippet already exists
+        collection = self.bot.db.snippets
+        snippet = await collection.find_one({'name': name})
+        if snippet:
+            return await ctx.send("Snippet with this name already exists.")
+
+        # get the CDN link from the attachment
+        if ctx.message.attachments:         
+            
+            # get the image file extension from the URL
+            ext = ctx.message.attachments[0].url.split('.')[-1]
+
+            # create temp folder if it doesn't exist
+            if not os.path.exists('./temp'):
+                os.makedirs('./temp')
+
+            await ctx.message.attachments[0].save(fp=f'./temp/{name}.{ext}')
+            storage_msg = await self.bot.get_channel(Channels.storage).send(file=discord.File(f'./temp/{name}.{ext}'))
+            storage_id = storage_msg.attachments[0].id
+             
+            content = storage_msg.attachments[0].url
+            snippet_type = 'link'
+            
+        else:
+            content = content.strip()
+            snippet_type = 'text'
+            storage_id = None
+       
+        
+        # add the snippet
+        await collection.insert_one({
+            'name': name,
+            'type': snippet_type,
+            'content': content,
+            'approved': True,            
+            'title': None,
+            'footer': None,
+            'created_at': datetime.utcnow(),
+            'owner_id': ctx.author.id,
+            'storage_id': storage_id
+
+        })
+
+        await ctx.send("Snippet added successfully.")
+
+
+    @snippet.command(name='info')
+    async def snippet_info(self, ctx, *, name: str):
+        """Shows information about a snippet."""
+            
+        collection = self.bot.db.snippets
+        snippet = await collection.find_one({'name': name})
+        if not snippet:
+            return await ctx.send("Snippet with this name does not exist.")
+
+        snippet_type = snippet.get('type', None)
+
+        embed = discord.Embed(color=discord.Color.red())
+        embed.title = snippet.get('name')
+        if snippet_type == 'link':
+            embed.set_image(url=snippet.get('content'))
+        else:
+            embed.description = snippet.get('content')            
+
+        # get member
+        member = ctx.guild.get_member(snippet.get('owner_id'))
+        if member:
+            embed.add_field(name='Owner', value=member.mention)
+        else:
+            embed.add_field(name='Owner', value=snippet.get('owner_id'))
+
+        # uses
+        embed.add_field(name='Uses', value=snippet.get('uses', 0))
+
+        embed.add_field(name='Approved', value=snippet.get('approved'))
+        
+        embed.add_field(name='Created at', value=snippet.get('created_at').strftime('%d/%m/%Y %H:%M:%S'))
+        
+        footer = snippet.get('footer', None)
+        if footer:
+            embed.set_footer(text=footer)
+
+        await ctx.send(embed=embed, reference=ctx.message)
+
+
+    @snippet.command(name='approve')
+    @commands.has_any_role('Mod', 'Staff')
+    async def snippet_approve(self, ctx, *, name: str):
+        """Approves a snippet."""
+
+        collection = self.bot.db.snippets
+        snippet = await collection.find_one({'name': name})
+        if not snippet:
+            return await ctx.send("Snippet with this name does not exist.")
+
+        await collection.update_one({'name': name}, {'$set': {'approved': True}})
+        await ctx.send("Snippet approved successfully.")
+
+    @snippet.command(name='unapprove')
+    @commands.has_any_role('Mod', 'Staff')
+    async def snippet_unapprove(self, ctx, *, name: str):
+        """Unapproves a snippet."""
+
+        collection = self.bot.db.snippets
+        snippet = await collection({'name': name})
+        if not snippet:
+            return await ctx.send("Snippet with this name does not exist.")
+
+        await collection.update_one({'name': name}, {'$set': {'approved': False}})
+        await ctx.send("Snippet unapproved successfully.")
+
+    @snippet.command(name='delete')
+    @commands.has_any_role('Mod', 'Staff')
+    async def snippet_delete(self, ctx, *, name: str):
+        """Deletes a snippet."""
+
+        collection = self.bot.db.snippets
+        snippet = await collection.find_one({'name': name})
+        if not snippet:
+            return await ctx.send("Snippet with this name does not exist.")
+
+        await collection.delete_one({'name': name})
+        await ctx.send("Snippet deleted successfully.")
 
 
 async def setup(bot):

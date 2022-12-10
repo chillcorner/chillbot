@@ -233,6 +233,8 @@ class Channels(metaclass=YAMLGetter):
     artwork: int
     pets: int
 
+    storage: int
+
 
 class Threads(metaclass=YAMLGetter):
     section = "threads"

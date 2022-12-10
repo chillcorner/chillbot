@@ -8,3 +8,4 @@ config_test.yml
 /.git/
 test.py
 test/
+temp/
