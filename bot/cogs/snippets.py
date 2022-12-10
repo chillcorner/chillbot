@@ -26,7 +26,7 @@ class Snippets(commands.Cog):
         return bucket.update_rate_limit()
 
     async def snippet_exists(self, name: str):
-        return await self.bot.snippets.find_one({'name': name})
+        return await self.bot.snippets.find_one({'name': {'$regex': f'^{name}$', '$options': 'i'}}) 
 
     async def snippet_not_found(self, ctx):
         return await ctx.send(f"Snipppet with this name does not exist.", reference=ctx.message)
@@ -53,7 +53,7 @@ class Snippets(commands.Cog):
 
         # extract mentions and clean the command
         mentions_str = " ".join([m.mention for m in msg.mentions])
-        cmd = re.sub(r'<@(!?)([0-9]*)>', '', title).strip()
+        cmd = re.sub(r'<@(!?)([0-9]*)>', '', title).strip().lower()
 
         # mongodb stuff
         snippet = await self.snippet_exists(cmd)
