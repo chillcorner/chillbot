@@ -133,7 +133,7 @@ class ChillBot(commands.Bot):
 
         # custom exceptions
         elif isinstance(exception, SnippetDoesNotExist):
-            await ctx.send(exception)
+            await ctx.send(f"Snippet with this name does not exist.", reference=ctx.message)
         
 
         elif isinstance(exception, asyncio.TimeoutError):

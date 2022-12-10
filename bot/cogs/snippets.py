@@ -26,7 +26,10 @@ class Snippets(commands.Cog):
         return bucket.update_rate_limit()
 
     async def snippet_exists(self, name: str):
-        return await self.bot.snippets.find_one({'name': {'$regex': f'^{name}$', '$options': 'i'}}) 
+        snippet = await self.bot.snippets.find_one({'name': {'$regex': f'^{name}$', '$options': 'i'}}) 
+        if not snippet:
+            raise SnippetDoesNotExist()
+        return snippet
 
     async def snippet_not_found(self, ctx):
         return await ctx.send(f"Snipppet with this name does not exist.", reference=ctx.message)
@@ -57,8 +60,6 @@ class Snippets(commands.Cog):
 
         # mongodb stuff
         snippet = await self.snippet_exists(cmd)
-        if not snippet:
-            return 
 
         # check for cooldown
         on_cooldown = await self.is_on_snippet_cooldown(msg)
@@ -111,9 +112,6 @@ class Snippets(commands.Cog):
          # check if snippet already exists
 
         snippet = await self.snippet_exists(name)
-        if snippet:
-            raise SnippetDoesNotExist(f"Snippet with this name already exists.")
-            return await ctx.send("Snippet with this name already exists.", reference=ctx.message)
 
         # get the CDN link from the attachment
         if ctx.message.attachments:
@@ -158,9 +156,7 @@ class Snippets(commands.Cog):
         """Shows information about a snippet."""
 
         snippet = await self.snippet_exists(name)
-        if not snippet:
-            raise SnippetDoesNotExist("This snippet does not exist")
-
+    
         snippet_type = snippet.get('type', None)
 
         embed = discord.Embed(color=discord.Color.red())
@@ -232,8 +228,6 @@ class Snippets(commands.Cog):
         """Approves a snippet."""
 
         snippet = await self.snippet_exists(name)
-        if not snippet:
-            raise SnippetDoesNotExist("This snippet does not exist")
 
         await self.bot.snippets.update_one({'name': name}, {'$set': {'approved': True}})
         await ctx.send("Snippet approved successfully.", reference=ctx.message)
@@ -244,8 +238,6 @@ class Snippets(commands.Cog):
         """Unapproves a snippet."""
 
         snippet = await self.snippet_exists(name)
-        if not snippet:
-            raise SnippetDoesNotExist("This snippet does not exist")
 
         await self.bot.snippets.update_one({'name': name}, {'$set': {'approved': False}})
         await ctx.send("Snippet unapproved successfully.", reference=ctx.message)
@@ -256,8 +248,6 @@ class Snippets(commands.Cog):
         """Deletes a snippet."""
 
         snippet = await self.snippet_exists(name)
-        if not snippet:
-            raise SnippetDoesNotExist("This snippet does not exist")
 
         await self.bot.snippets.delete_one({'name': name})
         await ctx.send("Snippet deleted successfully.", reference=ctx.message)
