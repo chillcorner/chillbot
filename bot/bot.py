@@ -3,13 +3,13 @@ import datetime as dt
 import logging
 import sys
 import traceback
-import asyncpg
 import aiohttp
 
 import discord
 
 from discord.ext import commands
 from discord.utils import get
+from bot.exceptions import SnippetDoesNotExist, SnippetExists
 from motor import motor_asyncio
 
 from bot.constants import Bot, Database
@@ -97,6 +97,7 @@ async def run_bot():
             # pool = await asyncpg.create_pool(Database.pgsql_string)
             client = motor_asyncio.AsyncIOMotorClient(Database.mongodb_string)
             bot.db = client.snippetsdb
+            bot.snippets = bot.db.snippets
 
             await bot.start(Bot.token, reconnect=True)
 
@@ -117,6 +118,7 @@ class ChillBot(commands.Bot):
 
     
     async def on_command_error(self, ctx, exception):
+
         if isinstance(exception, commands.CommandNotFound):
             return
 
@@ -128,7 +130,13 @@ class ChillBot(commands.Bot):
 
         elif isinstance(exception, commands.CommandOnCooldown):
             await ctx.send(exception)
+
+        # custom exceptions
+        elif isinstance(exception, SnippetDoesNotExist):
+            await ctx.send(f"Snippet with this name does not exist.", reference=ctx.message)
         
+        elif isinstance(exception, SnippetExists):
+            await ctx.send(f"Snippet with this name already exists.", reference=ctx.message)
 
         elif isinstance(exception, asyncio.TimeoutError):
             return

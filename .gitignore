@@ -9,3 +9,6 @@ config_test.yml
 test.py
 test/
 temp/
+
+.DS_Store
+.idea/
