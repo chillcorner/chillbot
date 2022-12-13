@@ -130,6 +130,10 @@ class Snippets(commands.Cog):
             content = storage_msg.attachments[0].url
             snippet_type = 'link'
 
+            # if content then append it to the name 
+            if content:
+                name = f'{name} {content}'
+
         else:
             content = content.strip()
             snippet_type = 'text'
@@ -272,6 +276,7 @@ class Snippets(commands.Cog):
     @commands.has_any_role('Mod', 'Staff')
     async def snippet_delete(self, ctx, *, name: str):
         """Deletes a snippet."""
+
 
         snippet = await self.snippet_exists(name)
         if not snippet:
