@@ -105,7 +105,10 @@ class Snippets(commands.Cog):
         # check if either the content is a text or there's an attachment
         if not content and not ctx.message.attachments:
             return await ctx.send("Please add a text or an attachment.", reference=ctx.message)
-
+        
+        attachments = ctx.message.attachments
+        if attachments and content:
+            name = f"{name} {content}"
          # check if snippet already exists
 
         snippet = await self.snippet_exists(name)
@@ -114,7 +117,7 @@ class Snippets(commands.Cog):
             raise SnippetExists()
 
         # get the CDN link from the attachment
-        if ctx.message.attachments:
+        if attachments:
 
             # get the image file extension from the URL
             ext = ctx.message.attachments[0].url.split('.')[-1]
@@ -130,9 +133,7 @@ class Snippets(commands.Cog):
             content = storage_msg.attachments[0].url
             snippet_type = 'link'
 
-            # if content then append it to the name 
-            if content:
-                name = f'{name} {content}'
+            
 
         else:
             content = content.strip()
