@@ -40,17 +40,16 @@ class OpenAI(commands.Cog):
         self.bot = bot
         self.cmd_enabled = False
 
+
     async def cog_check(self, ctx):
         if ctx.guild.id != Guilds.cc:
             return
 
         # disable all commands for now
-        return False # return True to allow commands
 
+        return False 
       
         
-
-
     def get_openapi_response(self, *, prompt, stop, tokens, temperature=0.7, frequency_penalty=0, presence_penalty=0):
         """
         Returns a response from OpenAI.ai.
