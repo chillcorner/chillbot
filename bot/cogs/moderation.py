@@ -10,11 +10,11 @@ from bot.constants import Channels, Whitelists
 async def handle_media_only_channel_content(msg):
     if msg.attachments:
         return
-    if type(msg.channel) == discord.Thread:
+    if msg.channel.type == discord.Thread:
         return
 
     # delete if message type is default or reply
-    if any(type(msg) == t for t in (discord.MessageType.default, discord.MessageType.reply)):
+    if any(msg.type == t for t in (discord.MessageType.default, discord.MessageType.reply)):
         try:
             await msg.delete()
             await msg.author.send("Please create a thread and post your reply there instead of directly replying to this channel.")
