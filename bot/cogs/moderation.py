@@ -14,7 +14,7 @@ async def handle_media_only_channel_content(msg):
         return
 
     # delete if message type is default or reply
-    if any(isinstance(msg, _t) for _t in (discord.MessageType.default, discord.MessageType.reply):
+    if any(isinstance(msg, _t) for _t in (discord.MessageType.default, discord.MessageType.reply)):
         try:
             await msg.delete()
             await msg.author.send("Please create a thread and post your reply there instead of directly replying to this channel.")
