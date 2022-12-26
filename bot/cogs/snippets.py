@@ -142,7 +142,7 @@ class Snippets(commands.Cog):
 
         # add the snippet
         await self.bot.snippets.insert_one({
-            'name': name,
+            'name': name.strip().lower(),
             'type': snippet_type,
             'content': content,
             'approved': True,
