@@ -8,6 +8,8 @@ from bot.constants import Channels, Whitelists, Roles
 from discord.ext.commands import BucketType, CooldownMapping, CommandOnCooldown
 
 DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 60, BucketType.member)
+IMAGE_LINK_REGEX = re.compile(
+    r'(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|svg)', re.IGNORECASE)
 
 async def apply_general_cooldown(msg):
 
@@ -67,8 +69,8 @@ class Moderation(commands.Cog):
 
         # check for cooldown
         if msg.channel.id == Channels.general:
-            # check if msg has attachments or is an image link
-            if msg.attachments or any(msg.content.lower().endswith(ext) for ext in ('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+            # check if msg has attachments or contains image link
+            if msg.attachments or IMAGE_LINK_REGEX.search(msg.content):
                 await apply_general_cooldown(msg)
 
 
