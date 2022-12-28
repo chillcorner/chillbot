@@ -68,7 +68,8 @@ class Moderation(commands.Cog):
         # check for cooldown
         if msg.channel.id == Channels.general:
             # check if msg has attachments or is an image link
-            await apply_general_cooldown(msg)
+            if msg.attachments or any(msg.content.lower().endswith(ext) for ext in ('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                await apply_general_cooldown(msg)
 
 
 
