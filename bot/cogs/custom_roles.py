@@ -28,6 +28,8 @@ def is_lvl_50(i: discord.Interaction):
             lvl_int = int(r.name.split(' ')[1])
             if lvl_int >= 50:
                 return True
+    # allow mod
+    return any(r.id == Roles.mod for r in i.user.roles)
 
 
 def is_lvl_50_or_patreon(interaction: discord.Interaction):
@@ -389,7 +391,11 @@ class MyCog(commands.Cog):
         cmd = interaction.command
         if cmd.parent.name == "cr":
             if cmd.name == "patreon":
-                return True            
+                return True
+
+            # staff members can use all commands
+            if any(r.id == Roles.mod for r in interaction.user.roles):
+                return True       
 
             if is_lvl_50_or_patreon(interaction):
                 return True
