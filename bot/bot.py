@@ -30,6 +30,7 @@ bot_extensions = [
     'cogs.verification',
     'cogs.moderation',
     'cogs.snippets',
+    'cogs.custom_roles',
 
 ]
 
