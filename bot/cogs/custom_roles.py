@@ -143,13 +143,13 @@ class MyCog(commands.Cog):
     # async def cog_check(self, ctx) -> bool:
     #     return ctx.user.id == 982097011434201108
 
-    @app_commands.command(name="sync")
-    @app_commands.checks.has_permissions(administrator=True)
-    async def sync(self, interaction: discord.Interaction) -> None:
+    @commands.command(name="sync")
+    @commands.is_owner()
+    async def sync(self, ctx) -> None:
         """Sync slash commands"""
-        await interaction.response.defer()
-        await interaction.client.tree.sync(guild=interaction.guild)
-        await interaction.followup.send("Synced slash commands.")
+        
+        await ctx.bot.tree.sync(guild=ctx.guild)
+        await ctx.send("Synced slash commands.")
 
     cr = app_commands.Group(
         name="cr", description="Custom roles related commands")
