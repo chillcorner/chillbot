@@ -237,6 +237,9 @@ class MyCog(commands.Cog):
 
         await interaction.response.defer()
 
+        # validate color
+        color = check_role_color(color)
+
         # get the role ID
         document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
         if not document:
@@ -264,6 +267,9 @@ class MyCog(commands.Cog):
         # TODO: make sure it doesn't match with any of the existing roles except their own(i.e. case changes)
 
         await interaction.response.defer()
+
+        # validation
+        name = check_role_name(name, interaction.guild.roles)
 
         # get the role ID
         document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
@@ -302,6 +308,7 @@ class MyCog(commands.Cog):
         await interaction.response.defer()
 
         # TODO: image validation(only JPG/PNG)
+        icon_url = check_role_icon_url(icon_url)
 
         # get the role ID
         document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
