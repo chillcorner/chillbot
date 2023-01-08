@@ -396,7 +396,7 @@ class MyCog(commands.Cog):
             await interaction.response.send_message(str(error), ephemeral=True)
     
     @cr.error
-    async def on_cr_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+    async def on_cr_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CheckFailure):
             pass
             # await interaction.response.send_message(str(error), ephemeral=True)
