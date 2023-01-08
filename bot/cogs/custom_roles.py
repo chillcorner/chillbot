@@ -364,6 +364,14 @@ class MyCog(commands.Cog):
         clause = "un" if is_mentionable else ""
         await interaction.followup.send(f"Made role {clause}mentionable!", ephemeral=True)
 
+    @cr.command(name="slots")
+    @app_commands.default_permissions(administrator=True)
+    async def slots(self, interaction: discord.Interaction) -> None:
+        """Displays the number of custom role slots available"""
+        
+        resp = f"Custom role slots available: {(250 - len(interaction.guild.roles)) - 10}/250."
+        await interaction.response.send_message(resp, ephemeral=True)
+
     @cr.command(name="patreon")
     async def patreon(self, interaction: discord.Interaction) -> None:
         """Patreon link to support the bot development"""            
@@ -383,11 +391,18 @@ class MyCog(commands.Cog):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @create.error
-    async def on_cr_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+    async def on_create_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error), ephemeral=True)
+    
+    @cr.error
+    async def on_cr_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CheckFailure):
+            pass
+            # await interaction.response.send_message(str(error), ephemeral=True)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        # TODO: catch checkFailure and handle it
         cmd = interaction.command
         if cmd.parent.name == "cr":
             if cmd.name == "patreon":
