@@ -226,6 +226,9 @@ class MyCog(commands.Cog):
 
         # get the role ID
         document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
+        if not document:
+            await interaction.followup.send("You don't have a custom role!", ephemeral=True)
+            return
         role_id = document["role_id"]
 
         # get the role object
@@ -251,6 +254,10 @@ class MyCog(commands.Cog):
 
         # get the role ID
         document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
+        if not document:
+            await interaction.followup.send("You don't have a custom role!", ephemeral=True)
+            return
+
         role_id = document["role_id"]
 
         # get the role object
@@ -285,6 +292,9 @@ class MyCog(commands.Cog):
 
         # get the role ID
         document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
+        if not document:
+            await interaction.followup.send("You don't have a custom role!", ephemeral=True)
+            return
         role_id = document["role_id"]
 
         # get the role object
