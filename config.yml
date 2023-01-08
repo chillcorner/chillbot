@@ -39,6 +39,11 @@ roles:
   - *PAT1
   - *PAT2
 
+people:
+  bharat: &OWNER 982097011434201108
+  owner: *OWNER
+
+
 whitelists:
   media_channels:
     - *SELFIES

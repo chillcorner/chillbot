@@ -9,7 +9,7 @@ from discord.ext import commands
 from discord import app_commands
 from discord.ext.commands import Context, Greedy
 
-from bot.constants import Guilds, Roles
+from bot.constants import Guilds, People, Roles
 
 # # MONGO SCHEMA
 # {
@@ -40,6 +40,14 @@ def is_lvl_50_or_patreon(interaction: discord.Interaction):
         return True
     
     return is_lvl_50(interaction)    
+
+def cooldown_check(interaction: discord.Interaction):
+    # owner only
+    if interaction.user.id == People.bharat:
+        return None
+
+    return app_commands.Cooldown(1, 60, app_commands.BucketType.user)
+    
 
 
 def is_patreon_t2(i: discord.Interaction):
@@ -159,8 +167,7 @@ class MyCog(commands.Cog):
     cr = app_commands.Group(
         name="cr", description="Custom roles related commands")
 
-    group_cooldown = app_commands.checks.cooldown(
-        1, 60, key=lambda i: i.user.id)
+    group_cooldown = app_commands.checks.dynamic_cooldown(cooldown_check)
 
     @cr.command(name="create")
     @group_cooldown

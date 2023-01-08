@@ -259,6 +259,12 @@ class Roles(metaclass=YAMLGetter):
     patreon_t2: int
     patreon_role_ids: List[int]
 
+class People(metaclass=YAMLGetter):
+    section = "people"
+
+    bharat: int
+    owner: int
+
 
 class Keys(metaclass=YAMLGetter):
     section = "keys"
