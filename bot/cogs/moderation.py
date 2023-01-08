@@ -7,6 +7,17 @@ from bot.cogs.utils import time
 from bot.constants import Channels, Whitelists
 
 
+async def delete_videos_in_general(msg):
+    if msg.channel.id != Channels.general:
+        return
+
+    if msg.attachments:
+        return
+
+    if msg.content.startswith('https://'):
+        await msg.delete()
+
+
 async def handle_media_only_channel_content(msg):
     if msg.attachments:
         return

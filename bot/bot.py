@@ -96,8 +96,9 @@ async def run_bot():
 
             # pool = await asyncpg.create_pool(Database.pgsql_string)
             client = motor_asyncio.AsyncIOMotorClient(Database.mongodb_string)
-            bot.db = client.snippetsdb
+            bot.db = client
             bot.snippets = bot.db.snippets
+            bot.custom_roles = bot.db.custom_roles
 
             await bot.start(Bot.token, reconnect=True)
 

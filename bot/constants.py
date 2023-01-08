@@ -223,7 +223,7 @@ class Categories(metaclass=YAMLGetter):
     section = "categories"
 
     verification: int
-
+    reports: int
 
 class Channels(metaclass=YAMLGetter):
     section = "channels"
@@ -254,6 +254,10 @@ class Roles(metaclass=YAMLGetter):
     mod: int
     artist: int
     verified: int
+
+    patreon_t1: int
+    patreon_t2: int
+    patreon_role_ids: List[int]
 
 
 class Keys(metaclass=YAMLGetter):

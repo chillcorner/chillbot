@@ -12,12 +12,12 @@ guilds:
 
 categories:
   verification: 987291067240046692
+  reports: 1052450379108978719
 
 threads:
   bot_questions: 997008952564912228
 
-channels:
-  
+channels:  
 
   staff_room: 711567984686137426
   storage: 987603378907525120
@@ -32,6 +32,12 @@ roles:
   mod: 445407188375306243
   verified: 480030345916317746
   artist: 525019822728282113
+
+  patreon_t1: &PAT1 1060750428054237184
+  patreon_t2: &PAT2 1060750559424036945
+  patreon_role_ids:
+  - *PAT1
+  - *PAT2
 
 whitelists:
   media_channels:
