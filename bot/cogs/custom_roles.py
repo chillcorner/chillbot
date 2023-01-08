@@ -420,24 +420,23 @@ class MyCog(commands.Cog):
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @create.error
-    async def on_create_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+    @create.error   
+    @name.error
+    @color.error
+    @icon.error
+    async def on_edit_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error), ephemeral=True)
 
         elif isinstance(error, CustomCheckFailure):
             await interaction.followup.send(str(error), ephemeral=True)
-
-            # reset the cooldown
             
     
     @cr.error
     async def on_cr_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CheckFailure):
-            pass
+            pass       
         
-        elif isinstance(error, CustomCheckFailure):
-            await interaction.response.send_message(str(error), ephemeral=True)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         # TODO: catch checkFailure and handle it
