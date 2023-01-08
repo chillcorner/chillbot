@@ -32,9 +32,9 @@ def is_lvl_50(i: discord.Interaction):
 
 def is_lvl_50_or_patreon(interaction: discord.Interaction):
     if any(r.id in Roles.patreon_role_ids for r in interaction.user.roles):
-        return is_lvl_50(interaction)
-
-    return False
+        return True
+    
+    return is_lvl_50(interaction)    
 
 
 def is_patreon_t2(i: discord.Interaction):
