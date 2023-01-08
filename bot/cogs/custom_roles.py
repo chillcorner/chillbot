@@ -435,7 +435,9 @@ class MyCog(commands.Cog):
     async def on_cr_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CheckFailure):
             pass
-            # await interaction.response.send_message(str(error), ephemeral=True)
+        
+        elif isinstance(error, CustomCheckFailure):
+            await interaction.response.send_message(str(error), ephemeral=True)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         # TODO: catch checkFailure and handle it
