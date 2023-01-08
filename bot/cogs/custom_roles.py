@@ -21,6 +21,9 @@ from bot.constants import Guilds, Roles
 #     "mentionable": True
 # }
 
+class CustomCheckFailure(commands.CheckFailure):
+    pass
+
 
 def is_lvl_50(i: discord.Interaction):
     for r in i.user.roles:
@@ -48,27 +51,27 @@ def is_patreon_t2(i: discord.Interaction):
 
 def check_role_name(name: str, roles: List[discord.Role]) -> str:
     if len(name) > 32:
-        raise app_commands.CommandInvokeError("Role names must be less than 32 characters.")
+        raise CustomCheckFailure("Role names must be less than 32 characters.")
     if name.lower() in [role.name.lower() for role in roles]:
-        raise app_commands.CommandInvokeError("Role name must be unique and not already in use.")
+        raise CustomCheckFailure("Role name must be unique and not already in use.")
     return name
 
 
 def check_role_color(color: str) -> str:
     if len(color) > 7:
-        raise app_commands.CommandInvokeError("Role color must be less than 7 characters.")
+        raise CustomCheckFailure("Role color must be less than 7 characters.")
     if not re.match(r"^#(?:[0-9a-fA-F]{3}){1,2}$", color):
-        raise app_commands.CommandInvokeError("Role color must be a valid hex color e.g. #FFFFFF")
+        raise CustomCheckFailure("Role color must be a valid hex color e.g. #FFFFFF")
     return color
 
 
 def check_role_icon_url(url: str) -> str:
     if len(url) > 1024:
-        raise app_commands.CommandInvokeError("Role icon URL must be less than 1024 characters.")
+        raise CustomCheckFailure("Role icon URL must be less than 1024 characters.")
     # TODO: check if it's a unicode emoji character
 
     if not re.match(r"^(http|https)://.*\.(?:png|jpg|jpeg)$", url):
-        raise app_commands.CommandInvokeError("Role icon must be a valid image url with a .png, .jpg, or .jpeg extension.")
+        raise CustomCheckFailure("Role icon must be a valid image url with a .png, .jpg, or .jpeg extension.")
 
     return url
 
@@ -166,9 +169,9 @@ class MyCog(commands.Cog):
                      name: str,
                      color: Optional[str] = None,
                      icon_url: Optional[str] = None) -> None:
-        """Create your own custom role"""
+        """Create your own custom role""" 
 
-        await interaction.response.defer()
+        await interaction.response.defer()       
 
         if interaction.user.id in self.roles_being_created:
             await interaction.followup.send("You already have a role being created!", ephemeral=True)
@@ -405,8 +408,8 @@ class MyCog(commands.Cog):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error), ephemeral=True)
 
-        elif isinstance(error, app_commands.CommandInvokeError):
-            await interaction.followup.send(str(error), ephemeral=True)
+        elif isinstance(error, CustomCheckFailure):
+            await interaction.response.send_message(str(error), ephemeral=True)
 
             # reset the cooldown
             
