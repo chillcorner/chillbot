@@ -21,7 +21,7 @@ from bot.constants import Guilds, Roles
 #     "mentionable": True
 # }
 
-class CustomCheckFailure(commands.CheckFailure):
+class CustomCheckFailure(app_commands.AppCommandError):
     pass
 
 
