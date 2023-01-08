@@ -21,25 +21,28 @@ from bot.constants import Guilds, People, Roles
 #     "mentionable": True
 # }
 
+
+MIN_LVL = 40
+
 class CustomCheckFailure(app_commands.AppCommandError):
     pass
 
 
-def is_lvl_50(i: discord.Interaction):
+def has_required_level(i: discord.Interaction):
     for r in i.user.roles:
         if r.name.startswith('lvl'):
             lvl_int = int(r.name.split(' ')[1])
-            if lvl_int >= 50:
+            if lvl_int >= MIN_LVL:
                 return True
     # allow mod
     return any(r.id == Roles.mod for r in i.user.roles)
 
 
-def is_lvl_50_or_patreon(interaction: discord.Interaction):
+def has_required_level_or_patreon(interaction: discord.Interaction):
     if any(r.id in Roles.patreon_role_ids for r in interaction.user.roles):
         return True
     
-    return is_lvl_50(interaction)    
+    return has_required_level(interaction)    
 
 def cooldown_check(interaction: discord.Interaction):
     # owner only
@@ -91,10 +94,10 @@ async def create_role(interaction, name, color, icon_url, mentionable, bot) -> d
         role_color = check_role_color(color)
     if icon_url:
         role_icon_url = check_role_icon_url(icon_url)
-        # make sure it's patreon T2 or lvl 50+
-        if not (is_patreon_t2(interaction) or is_lvl_50(interaction)):
+        # make sure it's patreon T2 or min lvl +
+        if not (is_patreon_t2(interaction) or has_required_level(interaction)):
             await interaction.followup.send(
-                "You must be a Patreon T2 or level 50+ to use custom role icons.",
+                f"You must be a Patreon T2 or level {MIN_LVL}+ to use custom role icons.",
                 ephemeral=True
             )
             return
@@ -438,9 +441,9 @@ class MyCog(commands.Cog):
             if any(r.id == Roles.mod for r in interaction.user.roles):
                 return True       
 
-            if is_lvl_50_or_patreon(interaction):
+            if has_required_level_or_patreon(interaction):
                 return True
-            await interaction.response.send_message("You need to be level 50+ or a patron to use this command", ephemeral=True)
+            await interaction.response.send_message(f"You need to be level {MIN_LVL}+ or a patron to use this command", ephemeral=True)
             return False
 
 
