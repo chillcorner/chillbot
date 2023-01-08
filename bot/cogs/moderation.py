@@ -1,11 +1,30 @@
-
+import re
 import discord
 from discord.ext import commands
 from typing import Optional
 
 from bot.cogs.utils import time
-from bot.constants import Channels, Whitelists
+from bot.constants import Channels, Whitelists, Roles
+from discord.ext.commands import BucketType, CooldownMapping, CommandOnCooldown
 
+DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 60, BucketType.member)
+IMAGE_LINK_REGEX = re.compile(
+    r'(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|svg)', re.IGNORECASE)
+
+async def apply_general_cooldown(msg):
+
+    # ignore rate limits for mods
+    if Roles.moderators in [r.id for r in msg.author.roles]:
+        return
+
+    bucket = DEFAULT_COOLDOWN.get_bucket(msg)
+    retry_after = bucket.update_rate_limit()
+    if retry_after:
+        try:
+            await msg.delete(reason="On general image cooldown")
+            await msg.author.send(f"Please wait {retry_after:.2f}s before posting another image in {msg.channel.mention}.")
+        except discord.HTTPException:
+            pass
 
 async def delete_videos_in_general(msg):
     if msg.channel.id != Channels.general:
@@ -24,6 +43,7 @@ async def handle_media_only_channel_content(msg):
     if msg.channel.type == discord.Thread:
         return
 
+    
     # delete if message type is default or reply
     if any(msg.type == t for t in (discord.MessageType.default, discord.MessageType.reply)):
         try:
@@ -57,6 +77,14 @@ class Moderation(commands.Cog):
 
         if msg.guild is None:
             return
+
+        # check for cooldown
+        if msg.channel.id == Channels.general:
+            # check if msg has attachments or contains image link
+            if msg.attachments or IMAGE_LINK_REGEX.search(msg.content):
+                await apply_general_cooldown(msg)
+
+
 
         if msg.channel.id in Whitelists.media_channels:
             await handle_media_only_channel_content(msg)
