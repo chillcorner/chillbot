@@ -270,7 +270,7 @@ class MyCog(commands.Cog):
         await role.edit(name=name)
 
         await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": {"name": name}})
-        await interaction.followup.send(f"Changed your name to {role.mention}", ephemeral=True)
+        await interaction.followup.send(f"Changed your role name to {role.mention}", ephemeral=True)
 
     @cr.command(name="icon")
     @group_cooldown
@@ -361,6 +361,19 @@ class MyCog(commands.Cog):
 
         clause = "un" if is_mentionable else ""
         await interaction.followup.send(f"Made role {clause}mentionable!", ephemeral=True)
+
+    @cr.command(name="rules")
+    async def rules(self, interaction: discord.Interaction) -> None:
+        """Rules to follow while using custom roles"""
+        embed = discord.Embed(title="Custom Role Rules", color=discord.Color.blurple())
+        embed.add_field(name="1. No NSFW content", value="Your custom role should not contain any NSFW content. This includes any kind of sexual content, nudity, etc.", inline=False)
+        embed.add_field(name="2. No offensive content", value="Your custom role should not contain any offensive content. This includes any kind of hate speech, racism, etc.", inline=False)
+        embed.add_field(name="4. No impersonation", value="Your custom role should not imitate any other server member/role", inline=False)
+        embed.add_field(name="Conclusion", value="Your custom role name, icon image etc should comply with the server rules and discord community guidelines", inline=False)
+
+        embed.set_footer(text="If you break any of these rules, your custom role could be removed without any warning")
+
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @create.error
     async def on_cr_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):

@@ -97,7 +97,7 @@ async def run_bot():
                 print(f"{n + 1}. Loaded extension: [{ext}]")
 
             # pool = await asyncpg.create_pool(Database.pgsql_string)
-            db = motor_asyncio.AsyncIOMotorClient(Database.mongodb_string)            
+            db = motor_asyncio.AsyncIOMotorClient(Database.mongodb_string)
             bot.snippets = db.snippetsdb.snippets
             bot.custom_roles = db.snippetsdb.custom_roles
 
@@ -111,17 +111,14 @@ async def run_bot():
         await bot.logout()
 
 
-
 class ChillBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.start_time = dt.datetime.now()
 
-
     async def on_error(self, event_method, *args, **kwargs):
         print(f'An error occurred while running {event_method}.')
 
-    
     async def on_command_error(self, ctx, exception):
 
         if isinstance(exception, commands.CommandNotFound):
@@ -139,7 +136,7 @@ class ChillBot(commands.Bot):
         # custom exceptions
         elif isinstance(exception, SnippetDoesNotExist):
             await ctx.send(f"Snippet with this name does not exist.", reference=ctx.message)
-        
+
         elif isinstance(exception, SnippetExists):
             await ctx.send(f"Snippet with this name already exists.", reference=ctx.message)
 
