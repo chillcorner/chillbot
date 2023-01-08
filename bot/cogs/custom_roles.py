@@ -370,7 +370,7 @@ class MyCog(commands.Cog):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.command.parent.name == "cr":
 
-            if self.is_lvl_50_or_patreon(interaction):
+            if is_lvl_50_or_patreon(interaction):
                 return True
             await interaction.response.send_message("You need to be level 50+ or a patron to use this command", ephemeral=True)
             return False
