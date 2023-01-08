@@ -49,7 +49,7 @@ def cooldown_check(interaction: discord.Interaction):
     if interaction.user.id == People.bharat:
         return None
 
-    return app_commands.Cooldown(1, 60, app_commands.BucketType.user)
+    return app_commands.Cooldown(1, 60)
     
 
 
