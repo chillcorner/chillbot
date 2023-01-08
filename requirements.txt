@@ -5,3 +5,4 @@ PyYAML==6.0
 parsedatetime
 asyncpg
 motor
+aiohttp

@@ -1,5 +1,6 @@
 import asyncio
 import datetime as dt
+import json
 import logging
 import sys
 import traceback
@@ -101,10 +102,13 @@ async def run_bot():
             bot.snippets = bot.db.snippets
             bot.custom_roles = bot.db.custom_roles
 
+            bot.session = aiohttp.ClientSession(json_serialize=json.dumps)
+
             await bot.start(Bot.token, reconnect=True)
 
     except KeyboardInterrupt:
         bot.db.close()
+        await bot.session.close()
         await bot.logout()
 
 
