@@ -416,7 +416,7 @@ class MyCog(commands.Cog):
             await interaction.response.send_message(str(error), ephemeral=True)
 
         elif isinstance(error, CustomCheckFailure):
-            await interaction.response.send_message(str(error), ephemeral=True)
+            await interaction.followup.send(str(error), ephemeral=True)
 
             # reset the cooldown
             
