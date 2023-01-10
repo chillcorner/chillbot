@@ -250,19 +250,23 @@ class MyCog(commands.Cog):
         update = {}
 
         if name:
-            update["name"] = name
+            update["name"] = check_role_name(name)
         
         if color:
-            update["color"] = color
+            update["color"] = check_role_color(color)
         
         if icon_url:
-            update["icon_url"] = icon_url
+            update["icon_url"] = check_role_icon_url(icon_url)
 
         
         await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": update})
 
         if "icon_url" in update:
             update["display_icon"] = await get_icon(update.pop("icon_url"), self.bot.session)
+
+        if "color" in update:
+            # convert hex to discord.Color
+            update["color"] = discord.Color(color[1:], 16)
         
         # update the role
         await role.edit(**update)
