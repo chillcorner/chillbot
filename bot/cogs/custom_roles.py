@@ -274,7 +274,8 @@ class MyCog(commands.Cog):
             # convert hex to discord.Color
             update["color"] = discord.Color(int(color[1:].strip(), 16))
         
-        print(f"Updating role {role} with data:\n{update}")
+        print(f"Updating role {role} with data:\n{update.keys()}")
+        print(f"{update.get('name')}")
         # update the role
         await role.edit(**update)
 
