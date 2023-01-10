@@ -4,6 +4,7 @@ import os
 import re
 from typing import Optional, Union
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands import BucketType, CooldownMapping, CommandOnCooldown
 from bot.exceptions import SnippetDoesNotExist, SnippetExists
@@ -13,6 +14,41 @@ IMAGE_URL_PATTERN = re.compile(
     r'(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|svg)', re.IGNORECASE)
 
 DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 20, BucketType.channel)
+
+
+
+class SnippetsGroup(app_commands.Group):
+    @app_commands.command(name="create", description="Create a new snippet")
+    async def create(self, interaction: discord.Integration, name: str, *, content: str):
+        pass
+
+    @app_commands.command(name="delete", description="Delete a snippet by name or ID")
+    async def delete(self, interaction: discord.Integration, name: str):
+        pass
+
+    @app_commands.command(name="edit", description="Edit a snippet by name or ID")
+    async def edit(self, interaction: discord.Integration, new_name: Optional[str] = None):
+        pass
+
+    @app_commands.command(name="list", description="List all snippets")
+    async def list(self, interaction: discord.Integration):
+        pass
+
+    @app_commands.command(name="search", description="Search for a snippet by name")
+    async def search(self, interaction: discord.Integration, name: str):
+        pass
+
+    @app_commands.command(name="info", description="Info about a snippet")
+    async def info(self, interaction: discord.Integration, name: str):
+        pass
+
+    @app_commands.command(name="user", description="List all snippets by a user")
+    async def user(self, interaction: discord.Integration, user: discord.User):
+        pass
+
+    @app_commands.command(name="leaderboard", description="Snippet leaderboard")
+    async def leaderboard(self, interaction: discord.Integration):
+        pass
 
 
 class Snippets(commands.Cog):
@@ -105,7 +141,7 @@ class Snippets(commands.Cog):
         # check if either the content is a text or there's an attachment
         if not content and not ctx.message.attachments:
             return await ctx.send("Please add a text or an attachment.", reference=ctx.message)
-        
+
         attachments = ctx.message.attachments
         if attachments and content:
             name = f"{name} {content}"
@@ -132,8 +168,6 @@ class Snippets(commands.Cog):
 
             content = storage_msg.attachments[0].url
             snippet_type = 'link'
-
-            
 
         else:
             content = content.strip()
@@ -248,7 +282,6 @@ class Snippets(commands.Cog):
 
         await ctx.send(embed=embed, reference=ctx.message)
 
-
     @snippet.command(name='approve')
     @commands.has_any_role('Mod', 'Staff')
     async def snippet_approve(self, ctx, *, name: str):
@@ -277,7 +310,6 @@ class Snippets(commands.Cog):
     @commands.has_any_role('Mod', 'Staff')
     async def snippet_delete(self, ctx, *, name: str):
         """Deletes a snippet."""
-
 
         snippet = await self.snippet_exists(name)
         if not snippet:
