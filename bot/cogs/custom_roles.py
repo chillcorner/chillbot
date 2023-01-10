@@ -93,10 +93,10 @@ def check_role_icon_url(url: str) -> str:
     return url
 
 
-async def get_icon(icon_url: str, session: aiohttp.ClientSession) -> bytes:
+async def get_icon(icon_url: str, session: aiohttp.ClientSession):
     async with session.get(icon_url) as resp:
-        return await resp.read()
-
+        _bytes =  await resp.read()
+        return _bytes
 
 async def create_role(interaction, name, color, icon_url, mentionable, bot) -> discord.Role:
     """Create a role with the given name, color, and icon url"""
@@ -256,6 +256,7 @@ class MyCog(commands.Cog):
             kwargs["color"] = discord.Color(int(color[1:], 16))
         if icon_url:
             icon_url = check_role_icon_url(icon_url)
+            print('Getting icon bytes.')
             kwargs["display_icon"] = await get_icon(icon_url, self.bot.session)
 
         # update the role
