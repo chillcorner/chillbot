@@ -272,7 +272,7 @@ class MyCog(commands.Cog):
 
         if "color" in update:
             # convert hex to discord.Color
-            update["color"] = discord.Color(color[1:], 16)
+            update["color"] = discord.Color(int(color[1:].strip(), 16))
         
         print(f"Updating role {role} with data:\n{update}")
         # update the role
