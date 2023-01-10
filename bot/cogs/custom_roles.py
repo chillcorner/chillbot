@@ -251,7 +251,7 @@ class MyCog(commands.Cog):
         update = {}
 
         if name:
-            update["name"] = check_role_name(name)
+            update["name"] = check_role_name(name, interaction.guild.roles)
         
         if color:
             update["color"] = check_role_color(color)
