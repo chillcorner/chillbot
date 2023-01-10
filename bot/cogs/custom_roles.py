@@ -268,6 +268,8 @@ class MyCog(commands.Cog):
             "icon_url": icon_url or document["icon_url"]
         }})
 
+        await interaction.followup.send("Updated your custom role!", ephemeral=True)
+
     @cr.command(name="delete")
     async def delete(self, interaction: discord.Interaction) -> None:
         """Delete your custom role"""
