@@ -255,7 +255,12 @@ class MyCog(commands.Cog):
         await role.edit(**kwargs)
 
         # update the database
-        await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": kwargs})
+        await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": 
+            {
+                "name": name,
+                "color": color,
+                "icon_url": icon_url
+        }})
 
         await interaction.followup.send(f"Updated your custom role", ephemeral=True)
 
