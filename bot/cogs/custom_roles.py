@@ -25,6 +25,7 @@ from bot.constants import Guilds, People, Roles
 
 MIN_LVL = 40
 
+
 class CustomCheckFailure(app_commands.AppCommandError):
     pass
 
@@ -42,8 +43,9 @@ def has_required_level(i: discord.Interaction):
 def has_required_level_or_patreon(interaction: discord.Interaction):
     if any(r.id in Roles.patreon_role_ids for r in interaction.user.roles):
         return True
-    
-    return has_required_level(interaction)    
+
+    return has_required_level(interaction)
+
 
 def cooldown_check(interaction: discord.Interaction):
     # owner only
@@ -51,7 +53,6 @@ def cooldown_check(interaction: discord.Interaction):
         return None
 
     return app_commands.Cooldown(1, 60)
-    
 
 
 def is_patreon_t2(i: discord.Interaction):
@@ -65,7 +66,8 @@ def check_role_name(name: str, roles: List[discord.Role]) -> str:
     if len(name) > 32:
         raise CustomCheckFailure("Role names must be less than 32 characters.")
     if name.lower() in [role.name.lower() for role in roles]:
-        raise CustomCheckFailure("Role name must be unique and not already in use.")
+        raise CustomCheckFailure(
+            "Role name must be unique and not already in use.")
     return name
 
 
@@ -73,19 +75,23 @@ def check_role_color(color: str) -> str:
     if len(color) > 7:
         raise CustomCheckFailure("Role color must be less than 7 characters.")
     if not re.match(r"^#(?:[0-9a-fA-F]{3}){1,2}$", color):
-        raise CustomCheckFailure("Role color must be a valid hex color e.g. #FFFFFF")
+        raise CustomCheckFailure(
+            "Role color must be a valid hex color e.g. #FFFFFF")
     return color
 
 
 def check_role_icon_url(url: str) -> str:
     if len(url) > 1024:
-        raise CustomCheckFailure("Role icon URL must be less than 1024 characters.")
+        raise CustomCheckFailure(
+            "Role icon URL must be less than 1024 characters.")
     # TODO: check if it's a unicode emoji character
 
     if not re.match(r"^(http|https)://.*\.(?:png|jpg|jpeg)$", url):
-        raise CustomCheckFailure("Role icon must be a valid image url with a .png, .jpg, or .jpeg extension.")
+        raise CustomCheckFailure(
+            "Role icon must be a valid image url with a .png, .jpg, or .jpeg extension.")
 
     return url
+
 
 async def get_icon(icon_url: str, session: aiohttp.ClientSession) -> bytes:
     async with session.get(icon_url) as resp:
@@ -107,7 +113,7 @@ async def create_role(interaction, name, color, icon_url, mentionable, bot) -> d
             )
             return
         # turn the role_icon_url to bytes
-        
+
         role_icon_bytes = await get_icon(role_icon_url, bot.session)
 
     # create the role with the validated name, color, and icon url
@@ -168,7 +174,7 @@ class MyCog(commands.Cog):
     @commands.is_owner()
     async def sync(self, ctx) -> None:
         """Sync slash commands"""
-        
+
         await ctx.bot.tree.sync(guild=ctx.guild)
         await ctx.send("Synced slash commands.")
 
@@ -184,9 +190,9 @@ class MyCog(commands.Cog):
                      name: str,
                      color: Optional[str] = None,
                      icon_url: Optional[str] = None) -> None:
-        """Create your own custom role""" 
+        """Create your own custom role"""
 
-        await interaction.response.defer()       
+        await interaction.response.defer()
 
         if interaction.user.id in self.roles_being_created:
             await interaction.followup.send("You already have a role being created!", ephemeral=True)
@@ -210,11 +216,13 @@ class MyCog(commands.Cog):
 
     @cr.command(name="update")
     @group_cooldown
-    @app_commands.describe(name="Your new role name", color="Your new role color hex", icon_url="Your new role icon URL in PNG/JPG format")
+    @app_commands.describe(name="Your new role name",
+                           color="Your new role color hex",
+                           icon_url="Your new role icon URL in PNG/JPG format")
     async def update(self, interaction: discord.Interaction,
-                        name: Optional[str] = None,
-                        color: Optional[str] = None,
-                        icon_url: Optional[str] = None) -> None:
+                     name: Optional[str] = None,
+                     color: Optional[str] = None,
+                     icon_url: Optional[str] = None) -> None:
         """Update your custom role name, color, or icon"""
 
         if not any([name, color, icon_url]):
@@ -223,7 +231,6 @@ class MyCog(commands.Cog):
 
         await interaction.response.defer()
 
-       
         # get role ID
         document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
 
@@ -231,7 +238,6 @@ class MyCog(commands.Cog):
             await interaction.followup.send("You don't have a custom role!", ephemeral=True)
             return
 
-        
         role_id = document["role_id"]
 
         # get role object
@@ -241,7 +247,7 @@ class MyCog(commands.Cog):
             return
 
         kwargs = {}
-        
+
         if name:
             name = check_role_name(name)
             kwargs["name"] = name
@@ -253,6 +259,7 @@ class MyCog(commands.Cog):
             kwargs["display_icon"] = await get_icon(icon_url, self.bot.session)
 
         # update the role
+        print('Updating role...')
         await role.edit(**kwargs)
 
         if icon_url:
@@ -260,12 +267,11 @@ class MyCog(commands.Cog):
             kwargs['icon_url'] = icon_url
 
         # update the database
-        
-        
+        print('Updating database...', kwargs)
+
         await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": kwargs})
 
         await interaction.followup.send(f"Updated your custom role", ephemeral=True)
-
 
     @cr.command(name="delete")
     async def delete(self, interaction: discord.Interaction) -> None:
@@ -462,43 +468,47 @@ class MyCog(commands.Cog):
     @app_commands.default_permissions(administrator=True)
     async def slots(self, interaction: discord.Interaction) -> None:
         """Displays the number of custom role slots available"""
-        
+
         resp = f"Custom role slots available: {(250 - len(interaction.guild.roles)) - 10}/250."
         await interaction.response.send_message(resp, ephemeral=True)
 
     @cr.command(name="patreon")
     async def patreon(self, interaction: discord.Interaction) -> None:
-        """Patreon link to support the bot development"""            
+        """Patreon link to support the bot development"""
         await interaction.response.send_message("https://www.patreon.com/chillcornerbot")
 
     @cr.command(name="rules")
     async def rules(self, interaction: discord.Interaction) -> None:
         """Rules to follow while using custom roles"""
-        embed = discord.Embed(title="Custom Role Rules", color=discord.Color.blurple())
-        embed.add_field(name="1. No NSFW content", value="Your custom role should not contain any NSFW content. This includes any kind of sexual content, nudity, etc.", inline=False)
-        embed.add_field(name="2. No offensive content", value="Your custom role should not contain any offensive content. This includes any kind of hate speech, racism, etc.", inline=False)
-        embed.add_field(name="4. No impersonation", value="Your custom role should not imitate any other server member/role", inline=False)
-        embed.add_field(name="Conclusion", value="Your custom role name, icon image etc should comply with the server rules and discord community guidelines", inline=False)
+        embed = discord.Embed(title="Custom Role Rules",
+                              color=discord.Color.blurple())
+        embed.add_field(name="1. No NSFW content",
+                        value="Your custom role should not contain any NSFW content. This includes any kind of sexual content, nudity, etc.", inline=False)
+        embed.add_field(name="2. No offensive content",
+                        value="Your custom role should not contain any offensive content. This includes any kind of hate speech, racism, etc.", inline=False)
+        embed.add_field(name="4. No impersonation",
+                        value="Your custom role should not imitate any other server member/role", inline=False)
+        embed.add_field(
+            name="Conclusion", value="Your custom role name, icon image etc should comply with the server rules and discord community guidelines", inline=False)
 
-        embed.set_footer(text="If you break any of these rules, your custom role could be removed without any warning")
+        embed.set_footer(
+            text="If you break any of these rules, your custom role could be removed without any warning")
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @create.error
-    @update.error   
+    @update.error
     async def on_edit_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error), ephemeral=True)
 
         elif isinstance(error, CustomCheckFailure):
             await interaction.followup.send(str(error), ephemeral=True)
-            
-    
+
     @cr.error
     async def on_cr_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CheckFailure):
-            pass       
-        
+            pass
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         # TODO: catch checkFailure and handle it
@@ -509,7 +519,7 @@ class MyCog(commands.Cog):
 
             # staff members can use all commands
             if any(r.id == Roles.mod for r in interaction.user.roles):
-                return True       
+                return True
 
             if has_required_level_or_patreon(interaction):
                 return True
