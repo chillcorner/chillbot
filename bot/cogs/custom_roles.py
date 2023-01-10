@@ -246,29 +246,32 @@ class MyCog(commands.Cog):
             await interaction.followup.send("Your custom role doesn't exist!", ephemeral=True)
             return
 
-        # only update the fields that are provided
+        # only update the fields that are provided in one go
+        update = {}
+
         if name:
-            await role.edit(name=name)
+            update["name"] = name
+        
         if color:
-            await role.edit(color=discord.Color(int(color[1:], 16)))
+            update["color"] = color
+        
         if icon_url:
-            try:
-                role_icon_bytes = await get_icon(icon_url, self.bot.session)
-            except Exception as e:
-                print("Error, couldn't get the image: ", e)
-                return
+            update["icon_url"] = icon_url
 
-            await role.edit(display_icon=role_icon_bytes)
+        
+        await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": update})
 
-
-        # update the database to reflect the changes
-        await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": {
-            "name": name or document["name"],
-            "color": color or document["color"],
-            "icon_url": icon_url or document["icon_url"]
-        }})
+        if "icon_url" in update:
+            update["display_icon"] = await get_icon(update.pop("icon_url"), self.bot.session)
+        
+        # update the role
+        await role.edit(**update)
 
         await interaction.followup.send("Updated your custom role!", ephemeral=True)
+
+
+        
+        
 
     @cr.command(name="delete")
     async def delete(self, interaction: discord.Interaction) -> None:
