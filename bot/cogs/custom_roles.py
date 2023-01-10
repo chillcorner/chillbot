@@ -223,6 +223,7 @@ class MyCog(commands.Cog):
 
         await interaction.response.defer()
 
+       
         # get role ID
         document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
 
@@ -241,10 +242,13 @@ class MyCog(commands.Cog):
 
         kwargs = {}
         if name:
+            name = check_role_name(name)
             kwargs["name"] = name
         if color:
+            color = check_role_color(color)
             kwargs["color"] = discord.Color(int(color[1:], 16))
         if icon_url:
+            icon_url = check_role_icon_url(icon_url)
             kwargs["display_icon"] = await get_icon(icon_url, self.bot.session)
 
         # update the role
