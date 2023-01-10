@@ -486,9 +486,6 @@ class MyCog(commands.Cog):
 
     @create.error
     @update.error   
-    @name.error
-    @color.error
-    @icon.error
     async def on_edit_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error), ephemeral=True)
