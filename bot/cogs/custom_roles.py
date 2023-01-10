@@ -241,6 +241,7 @@ class MyCog(commands.Cog):
             return
 
         kwargs = {}
+        
         if name:
             name = check_role_name(name)
             kwargs["name"] = name
@@ -254,13 +255,14 @@ class MyCog(commands.Cog):
         # update the role
         await role.edit(**kwargs)
 
+        if icon_url:
+            kwargs.pop("display_icon")
+            kwargs['icon_url'] = icon_url
+
         # update the database
-        await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": 
-            {
-                "name": name,
-                "color": color,
-                "icon_url": icon_url
-        }})
+        
+        
+        await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": kwargs})
 
         await interaction.followup.send(f"Updated your custom role", ephemeral=True)
 
