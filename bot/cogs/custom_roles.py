@@ -231,8 +231,8 @@ class MyCog(commands.Cog):
 
         await interaction.response.defer()
 
-        # get role ID
-        document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
+        # get the document with all the info
+        document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id})
 
         if not document:
             await interaction.followup.send("You don't have a custom role!", ephemeral=True)
@@ -246,33 +246,27 @@ class MyCog(commands.Cog):
             await interaction.followup.send("Your custom role doesn't exist!", ephemeral=True)
             return
 
-        kwargs = {}
-
+        # only update the fields that are provided
         if name:
-            name = check_role_name(name)
-            kwargs["name"] = name
+            await role.edit(name=name)
         if color:
-            color = check_role_color(color)
-            kwargs["color"] = discord.Color(int(color[1:], 16))
+            await role.edit(color=discord.Color(int(color[1:], 16)))
         if icon_url:
-            icon_url = check_role_icon_url(icon_url)
-            print('Getting icon bytes.')
-            kwargs["display_icon"] = await get_icon(icon_url, self.bot.session)
+            try:
+                role_icon_bytes = await get_icon(icon_url, self.bot.session)
+            except Exception as e:
+                print("Error, couldn't get the image: ", e)
+                return
 
-        # update the role
-        print('Updating role...')
-        await role.edit(**kwargs)
+            await role.edit(display_icon=role_icon_bytes)
 
-        if icon_url:
-            kwargs.pop("display_icon")
-            kwargs['icon_url'] = icon_url
 
-        # update the database
-        print('Updating database...', kwargs)
-
-        await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": kwargs})
-
-        await interaction.followup.send(f"Updated your custom role", ephemeral=True)
+        # update the database to reflect the changes
+        await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": {
+            "name": name or document["name"],
+            "color": color or document["color"],
+            "icon_url": icon_url or document["icon_url"]
+        }})
 
     @cr.command(name="delete")
     async def delete(self, interaction: discord.Interaction) -> None:
