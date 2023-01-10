@@ -95,8 +95,9 @@ def check_role_icon_url(url: str) -> str:
 
 async def get_icon(icon_url: str, session: aiohttp.ClientSession):
     async with session.get(icon_url) as resp:
-        _bytes =  await resp.read()
-        return _bytes
+        return await resp.read()
+
+       
 
 async def create_role(interaction, name, color, icon_url, mentionable, bot) -> discord.Role:
     """Create a role with the given name, color, and icon url"""
@@ -258,8 +259,13 @@ class MyCog(commands.Cog):
         if icon_url:
             update["icon_url"] = check_role_icon_url(icon_url)
 
+
+        print('UPDATE: checks passed')
+
         
-        await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": update})
+        await self.bot.custom_roles.update_one({"user_id": interaction.user.id, "role.id": role.id}, {"$set": update})
+
+        print("UPDATED DB")
 
         if "icon_url" in update:
             update["display_icon"] = await get_icon(update.pop("icon_url"), self.bot.session)
@@ -268,7 +274,7 @@ class MyCog(commands.Cog):
             # convert hex to discord.Color
             update["color"] = discord.Color(color[1:], 16)
         
-        print(f"Updating role {role} with {update}")
+        print(f"Updating role {role} with data:\n{update}")
         # update the role
         await role.edit(**update)
 
@@ -305,109 +311,7 @@ class MyCog(commands.Cog):
         # delete role
         await role.delete(reason=f"Deleted by {interaction.user} ({interaction.user.id})")
         await interaction.followup.send(f"Deleted your custom role", ephemeral=True)
-
-    # @cr.command(name="color")
-    # async def color(self, interaction: discord.Interaction, color: str) -> None:
-    #     """Change your custom role's color"""
-
-    #     await interaction.response.defer()
-
-    #     # validate color
-    #     color = check_role_color(color)
-
-    #     # get the role ID
-    #     document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
-    #     if not document:
-    #         await interaction.followup.send("You don't have a custom role!", ephemeral=True)
-    #         return
-    #     role_id = document["role_id"]
-
-    #     # get the role object
-    #     role = interaction.guild.get_role(role_id)
-    #     if not role:
-    #         await interaction.followup.send("Role not found!", ephemeral=True)
-    #         return
-
-    #     # change the role's color
-    #     await role.edit(color=discord.Color(int(color[1:], 16)))
-
-    #     await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": {"color": color}})
-
-    #     await interaction.followup.send(f"Changed the role color to **{color}**", ephemeral=True)
-
-    # @cr.command(name="name")
-    # @group_cooldown
-    # async def name(self, interaction: discord.Interaction, name: str) -> None:
-    #     """Change your custom role's name"""
-    #     # TODO: make sure it doesn't match with any of the existing roles except their own(i.e. case changes)
-
-    #     await interaction.response.defer()
-
-    #     # validation
-    #     name = check_role_name(name, interaction.guild.roles)
-
-    #     # get the role ID
-    #     document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
-    #     if not document:
-    #         await interaction.followup.send("You don't have a custom role!", ephemeral=True)
-    #         return
-
-    #     role_id = document["role_id"]
-
-    #     # get the role object
-    #     role = interaction.guild.get_role(role_id)
-
-    #     if not role:
-    #         await interaction.followup.send("You don't have a custom role", ephemeral=True)
-    #         return
-
-    #     # make sure the name doesn't conflict with any of the existing roles
-    #     for r in interaction.guild.roles:
-    #         if r.id == role_id:
-    #             continue
-    #         if r.name.lower() in name.lower():
-    #             await interaction.followup.send("This role already exists!", ephemeral=True)
-    #             return
-
-    #     # change the role's name
-    #     await role.edit(name=name)
-
-    #     await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": {"name": name}})
-    #     await interaction.followup.send(f"Changed your role name to {role.mention}", ephemeral=True)
-
-    # @cr.command(name="icon")
-    # @group_cooldown
-    # async def icon(self, interaction: discord.Interaction, icon_url: str) -> None:
-    #     """Change your custom role's icon"""
-
-    #     await interaction.response.defer()
-
-    #     # TODO: image validation(only JPG/PNG)
-    #     icon_url = check_role_icon_url(icon_url)
-
-    #     # get the role ID
-    #     document = await self.bot.custom_roles.find_one({"user_id": interaction.user.id}, {"role_id": 1})
-    #     if not document:
-    #         await interaction.followup.send("You don't have a custom role!", ephemeral=True)
-    #         return
-    #     role_id = document["role_id"]
-
-    #     # get the role object
-    #     role = interaction.guild.get_role(role_id)
-    #     if not role:
-    #         await interaction.followup.send("Role not found!", ephemeral=True)
-    #         return
-
-    #     # change the role's icon
-    #     async with self.bot.session.get(icon_url) as resp:
-    #         resp = await resp.read()
-    #         await role.edit(display_icon=resp)
-
-    #     try:
-    #         await self.bot.custom_roles.update_one({"user_id": interaction.user.id}, {"$set": {"icon_url": icon_url}})
-    #     except Exception as e:
-    #         print('exception', e)
-    #     await interaction.followup.send(f"Changed icon to the URL provided!", ephemeral=True)
+   
 
     @cr.command(name="status")
     async def status(self, interaction: discord.Interaction) -> None:
