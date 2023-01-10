@@ -1,7 +1,8 @@
-from concurrent.futures import thread
 import functools
 import re
+from concurrent.futures import thread
 from typing import Optional
+
 import openai
 from discord.ext import commands
 
@@ -9,15 +10,15 @@ from bot.constants import Guilds, Keys, Threads
 
 openai.api_key = Keys.openai_key
 
-EMOJI_RE = re.compile(r'<(a?):([A-Za-z0-9_]+):([0-9]+)>')
-MENTION_RE = re.compile(r'<@?(!?)(#?)(&?)([0-9]*)>')
+EMOJI_RE = re.compile(r"<(a?):([A-Za-z0-9_]+):([0-9]+)>")
+MENTION_RE = re.compile(r"<@?(!?)(#?)(&?)([0-9]*)>")
 
 
 def clean_message(msg):
     """Removes emojis, mentions, and links from a message."""
 
-    msg = re.sub(MENTION_RE, '', msg)
-    new_msg = re.sub(EMOJI_RE, '', msg)
+    msg = re.sub(MENTION_RE, "", msg)
+    new_msg = re.sub(EMOJI_RE, "", msg)
 
     return new_msg.strip()
 
@@ -40,17 +41,24 @@ class OpenAI(commands.Cog):
         self.bot = bot
         self.cmd_enabled = False
 
-
     async def cog_check(self, ctx):
         if ctx.guild.id != Guilds.cc:
             return
 
         # disable all commands for now
 
-        return False 
-      
-        
-    def get_openapi_response(self, *, prompt, stop, tokens, temperature=0.7, frequency_penalty=0, presence_penalty=0):
+        return False
+
+    def get_openapi_response(
+        self,
+        *,
+        prompt,
+        stop,
+        tokens,
+        temperature=0.7,
+        frequency_penalty=0,
+        presence_penalty=0,
+    ):
         """
         Returns a response from OpenAI.ai.
         """
@@ -63,7 +71,7 @@ class OpenAI(commands.Cog):
             top_p=1,
             frequency_penalty=frequency_penalty,
             presence_penalty=presence_penalty,
-            stop=[stop]
+            stop=[stop],
         )
 
         return response["choices"][0]["text"]
@@ -73,7 +81,9 @@ class OpenAI(commands.Cog):
     async def cmd_enabled(self, ctx):
         """Toggles the OpenAI commands on and off."""
         self.cmd_enabled = not self.cmd_enabled
-        await ctx.send(f"{ctx.author.mention} Commands are now {'enabled' if self.cmd_enabled else 'disabled'}.")
+        await ctx.send(
+            f"{ctx.author.mention} Commands are now {'enabled' if self.cmd_enabled else 'disabled'}."
+        )
 
     @commands.command(enabled=False)
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -83,8 +93,11 @@ class OpenAI(commands.Cog):
         if not clean_text:
             return
 
-        res = self.get_openapi_response(prompt=f"Explain the meaning of this text from {ctx.message.reference.cached_message.author.display_name.title()}:\n{clean_text}\nExplanation:",
-                                        stop="Explanation:", tokens=256)
+        res = self.get_openapi_response(
+            prompt=f"Explain the meaning of this text from {ctx.message.reference.cached_message.author.display_name.title()}:\n{clean_text}\nExplanation:",
+            stop="Explanation:",
+            tokens=256,
+        )
         ref = ctx.message.reference.cached_message.to_reference()
         await ctx.send(content=res, reference=ref)
 
@@ -96,8 +109,11 @@ class OpenAI(commands.Cog):
         if not clean_text:
             return
 
-        res = self.get_openapi_response(prompt=f"Generate a quick response for this question:\n{clean_text}\nresponse:",
-                                        stop="Response:", tokens=256)
+        res = self.get_openapi_response(
+            prompt=f"Generate a quick response for this question:\n{clean_text}\nresponse:",
+            stop="Response:",
+            tokens=256,
+        )
 
         ref = ctx.message.reference.cached_message.to_reference()
         await ctx.send(content=res, reference=ref)
@@ -110,8 +126,11 @@ class OpenAI(commands.Cog):
         if not clean_text:
             return
 
-        res = self.get_openapi_response(prompt=f"Summarize this for a second-grade student:\n{clean_text}\nsummary:",
-                                        stop="Response:", tokens=75)
+        res = self.get_openapi_response(
+            prompt=f"Summarize this for a second-grade student:\n{clean_text}\nsummary:",
+            stop="Response:",
+            tokens=75,
+        )
         ref = ctx.message.reference.cached_message.to_reference()
         await ctx.send(content=res, reference=ref)
 
@@ -123,8 +142,11 @@ class OpenAI(commands.Cog):
         if not clean_text:
             return
 
-        res = self.get_openapi_response(prompt=f"Correct this to standard English:\n{clean_text}\ncorrection:",
-                                        stop="Correction:", tokens=60)
+        res = self.get_openapi_response(
+            prompt=f"Correct this to standard English:\n{clean_text}\ncorrection:",
+            stop="Correction:",
+            tokens=60,
+        )
         ref = ctx.message.reference.cached_message.to_reference()
         await ctx.send(content=res, reference=ref)
 
@@ -135,13 +157,18 @@ class OpenAI(commands.Cog):
         if topic:
             prompt = clean_message(topic)
 
-        prompt = "Tell me a random fact" if not topic else f"Tell me a fact about {prompt}."
+        prompt = (
+            "Tell me a random fact" if not topic else f"Tell me a fact about {prompt}."
+        )
 
         async with ctx.channel.typing():
-            func = functools.partial(self.get_openapi_response,
-                                     prompt=f"{prompt}\nfact:",
-                                     stop="Fact:", tokens=60)
-            res = await self.bot.loop.run_in_executor(None, func) 
+            func = functools.partial(
+                self.get_openapi_response,
+                prompt=f"{prompt}\nfact:",
+                stop="Fact:",
+                tokens=60,
+            )
+            res = await self.bot.loop.run_in_executor(None, func)
 
             await ctx.reply(res)
 
@@ -163,15 +190,14 @@ class OpenAI(commands.Cog):
                 top_p=1,
                 frequency_penalty=0,
                 presence_penalty=0,
-                stop=['Answer:']
-
+                stop=["Answer:"],
             )
 
         res = response["choices"][0]["text"]
         await ctx.send(content=res.lstrip("\n"))
 
-    @ commands.command(enabled=False)
-    @ commands.cooldown(1, 20, commands.BucketType.member)
+    @commands.command(enabled=False)
+    @commands.cooldown(1, 20, commands.BucketType.member)
     async def topic(self, ctx, *, category: Optional[str]):
         """Generates a question for you to talk about based on the topic category provided. Leave topic empty for a random question"""
 
@@ -192,27 +218,30 @@ class OpenAI(commands.Cog):
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0,
-            stop=["Question:"]
+            stop=["Question:"],
         )
 
         r = response["choices"][0]["text"]
         await ctx.send(content=r, reference=ctx.message.to_reference())
 
-    @ commands.command(enabled=False)
-    @ commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.command(enabled=False)
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def story(self, ctx, *, members: str):
         """Generates a story based on names provided"""
         if not members:
             return
 
-        names = ', '.join(f"{m.strip()}" for m in members.split())
+        names = ", ".join(f"{m.strip()}" for m in members.split())
 
-        prompt = f'Create a fake story between {names}.'
+        prompt = f"Create a fake story between {names}."
 
         async with ctx.channel.typing():
-            func = functools.partial(self.get_openapi_response,
-                                     prompt=f"{prompt}\nStory:",
-                                     stop="Story:", tokens=120)
+            func = functools.partial(
+                self.get_openapi_response,
+                prompt=f"{prompt}\nStory:",
+                stop="Story:",
+                tokens=120,
+            )
             res = await self.bot.loop.run_in_executor(None, func)
 
             await ctx.send(content=res)

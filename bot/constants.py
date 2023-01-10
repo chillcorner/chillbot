@@ -19,7 +19,6 @@ from typing import Dict, List, Optional
 
 import yaml
 
-
 log = logging.getLogger(__name__)
 
 
@@ -39,7 +38,7 @@ def _env_var_constructor(loader, node):
     default = None
 
     # Check if the node is a plain string value
-    if node.id == 'scalar':
+    if node.id == "scalar":
         value = loader.construct_scalar(node)
         key = str(value)
     else:
@@ -112,7 +111,7 @@ def check_required_keys(keys):
     for key_path in keys:
         lookup = _CONFIG_YAML
         try:
-            for key in key_path.split('.'):
+            for key in key_path.split("."):
                 lookup = lookup[key]
                 if lookup is None:
                     raise KeyError(key)
@@ -125,7 +124,7 @@ def check_required_keys(keys):
 
 
 try:
-    required_keys = _CONFIG_YAML['config']['required_keys']
+    required_keys = _CONFIG_YAML["config"]["required_keys"]
 except KeyError:
     pass
 else:
@@ -175,7 +174,9 @@ class YAMLGetter(type):
 
         try:
             if cls.sub_subsection is not None:
-                return _CONFIG_YAML[cls.section][cls.subsection][cls.sub_subsection][name]
+                return _CONFIG_YAML[cls.section][cls.subsection][cls.sub_subsection][
+                    name
+                ]
             elif cls.subsection is not None:
                 return _CONFIG_YAML[cls.section][cls.subsection][name]
             return _CONFIG_YAML[cls.section][name]
@@ -207,7 +208,7 @@ class Bot(metaclass=YAMLGetter):
 
 
 class Database(metaclass=YAMLGetter):
-    section = 'database'
+    section = "database"
 
     pgsql_string: str
     mongodb_string: str
@@ -224,6 +225,7 @@ class Categories(metaclass=YAMLGetter):
 
     verification: int
     reports: int
+
 
 class Channels(metaclass=YAMLGetter):
     section = "channels"
@@ -258,6 +260,7 @@ class Roles(metaclass=YAMLGetter):
     patreon_t1: int
     patreon_t2: int
     patreon_role_ids: List[int]
+
 
 class People(metaclass=YAMLGetter):
     section = "people"

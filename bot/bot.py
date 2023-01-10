@@ -4,17 +4,15 @@ import json
 import logging
 import sys
 import traceback
+
 import aiohttp
-
 import discord
-
 from discord.ext import commands
 from discord.utils import get
-from bot.exceptions import SnippetDoesNotExist, SnippetExists
 from motor import motor_asyncio
 
 from bot.constants import Bot, Database
-
+from bot.exceptions import SnippetDoesNotExist, SnippetExists
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -26,23 +24,20 @@ intents.presences = True
 
 # extensions to load
 bot_extensions = [
-    'cogs.onboarding',
-    'cogs.openai',
-    'cogs.verification',
-    'cogs.moderation',
-    'cogs.snippets',
-    'cogs.custom_roles',
-
+    "cogs.onboarding",
+    "cogs.openai",
+    "cogs.verification",
+    "cogs.moderation",
+    "cogs.snippets",
+    "cogs.custom_roles",
 ]
 
 # logging stuff
 logging.getLogger(__name__).setLevel(logging.INFO)
 
-formatter = logging.Formatter(
-    '%(asctime)s:%(levelname)s:%(name)s: %(message)s')
+formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
 
-handler = logging.FileHandler(
-    filename='chillbot.log', encoding='utf-8', mode='a')
+handler = logging.FileHandler(filename="chillbot.log", encoding="utf-8", mode="a")
 handler.setFormatter(formatter)
 
 stream = logging.StreamHandler(stream=sys.stdout)
@@ -63,18 +58,12 @@ async def run_bot():
     description = Bot.description
 
     # bot params
-    allowed_mentions = discord.AllowedMentions(
-        everyone=False,
-        users=True,
-        roles=False
-
-    )
+    allowed_mentions = discord.AllowedMentions(everyone=False, users=True, roles=False)
 
     default_status = discord.Status.dnd
 
     default_activity = discord.Activity(
-        type=discord.ActivityType.listening,
-        name="mods"
+        type=discord.ActivityType.listening, name="mods"
     )
 
     bot = ChillBot(
@@ -85,8 +74,7 @@ async def run_bot():
         case_insensitive=True,
         allowed_mentions=allowed_mentions,
         status=default_status,
-        activity=default_activity
-
+        activity=default_activity,
     )
 
     try:
@@ -117,7 +105,7 @@ class ChillBot(commands.Bot):
         self.start_time = dt.datetime.now()
 
     async def on_error(self, event_method, *args, **kwargs):
-        print(f'An error occurred while running {event_method}.')
+        print(f"An error occurred while running {event_method}.")
 
     async def on_command_error(self, ctx, exception):
 
@@ -135,31 +123,33 @@ class ChillBot(commands.Bot):
 
         # custom exceptions
         elif isinstance(exception, SnippetDoesNotExist):
-            await ctx.send(f"Snippet with this name does not exist.", reference=ctx.message)
+            await ctx.send(
+                f"Snippet with this name does not exist.", reference=ctx.message
+            )
 
         elif isinstance(exception, SnippetExists):
-            await ctx.send(f"Snippet with this name already exists.", reference=ctx.message)
+            await ctx.send(
+                f"Snippet with this name already exists.", reference=ctx.message
+            )
 
         elif isinstance(exception, asyncio.TimeoutError):
             return
 
         elif isinstance(exception, commands.NoPrivateMessage):
-            await ctx.author.send('This command cannot be used in private messages.')
+            await ctx.author.send("This command cannot be used in private messages.")
 
         elif isinstance(exception, commands.DisabledCommand):
-            await ctx.author.send('Sorry. This command is disabled and cannot be used.')
+            await ctx.author.send("Sorry. This command is disabled and cannot be used.")
 
         elif isinstance(exception, commands.CommandInvokeError):
             original = exception.original
             if not isinstance(original, discord.HTTPException):
-                print(f'In {ctx.command.qualified_name}:', file=sys.stderr)
+                print(f"In {ctx.command.qualified_name}:", file=sys.stderr)
                 traceback.print_tb(original.__traceback__)
-                print(f'{original.__class__.__name__}: {original}',
-                      file=sys.stderr)
+                print(f"{original.__class__.__name__}: {original}", file=sys.stderr)
             else:
                 if isinstance(original, discord.NotFound):
-                    print(f'{original.__class__.__name__}: {original}',
-                          file=sys.stderr)
+                    print(f"{original.__class__.__name__}: {original}", file=sys.stderr)
         elif isinstance(exception, commands.ArgumentParsingError):
             await ctx.send(exception)
 

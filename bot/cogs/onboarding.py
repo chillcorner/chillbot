@@ -1,14 +1,12 @@
 import asyncio
-import discord
-from discord.ext import commands
-from discord.ext import tasks
 
+import discord
+from discord.ext import commands, tasks
 
 from bot.constants import Channels, Guilds
 
 
 class Onboarding(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.new_members_queue = []
@@ -20,8 +18,6 @@ class Onboarding(commands.Cog):
     async def send_welcome_message(self, member: discord.Member):
         system_channel = member.guild.system_channel
         await system_channel.send(f"Welcome {member.mention}!")
-        
-
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -45,10 +41,10 @@ class Onboarding(commands.Cog):
 
         if not len(new_members) >= 5:
             for member in new_members:
-                if not isinstance(member, discord.Member):                    
-                    continue 
+                if not isinstance(member, discord.Member):
+                    continue
                 await self.send_welcome_message(member)
-                
+
             return
 
         for member in new_members:
@@ -62,7 +58,9 @@ class Onboarding(commands.Cog):
         if not staff_room:
             return
 
-        await staff_room.send(f"Potential raid detected. Banned {len(new_members)} accounts.")
+        await staff_room.send(
+            f"Potential raid detected. Banned {len(new_members)} accounts."
+        )
 
 
 async def setup(bot):

@@ -3,23 +3,27 @@ import datetime
 import os
 import re
 from typing import Optional, Union
+
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord.ext.commands import BucketType, CooldownMapping, CommandOnCooldown
-from bot.exceptions import SnippetDoesNotExist, SnippetExists
+from discord.ext.commands import BucketType, CommandOnCooldown, CooldownMapping
+
 from bot.constants import Channels, Guilds
+from bot.exceptions import SnippetDoesNotExist, SnippetExists
 
 IMAGE_URL_PATTERN = re.compile(
-    r'(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|svg)', re.IGNORECASE)
+    r"(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|svg)", re.IGNORECASE
+)
 
 DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 20, BucketType.channel)
 
 
-
 class SnippetsGroup(app_commands.Group):
     @app_commands.command(name="create", description="Create a new snippet")
-    async def create(self, interaction: discord.Integration, name: str, *, content: str):
+    async def create(
+        self, interaction: discord.Integration, name: str, *, content: str
+    ):
         pass
 
     @app_commands.command(name="delete", description="Delete a snippet by name or ID")
@@ -27,7 +31,9 @@ class SnippetsGroup(app_commands.Group):
         pass
 
     @app_commands.command(name="edit", description="Edit a snippet by name or ID")
-    async def edit(self, interaction: discord.Integration, new_name: Optional[str] = None):
+    async def edit(
+        self, interaction: discord.Integration, new_name: Optional[str] = None
+    ):
         pass
 
     @app_commands.command(name="list", description="List all snippets")
@@ -60,10 +66,14 @@ class Snippets(commands.Cog):
         return bucket.update_rate_limit()
 
     async def snippet_exists(self, name: str):
-        return await self.bot.snippets.find_one({'name': {'$regex': f'^{name}$', '$options': 'i'}})
+        return await self.bot.snippets.find_one(
+            {"name": {"$regex": f"^{name}$", "$options": "i"}}
+        )
 
     async def snippet_not_found(self, ctx):
-        return await ctx.send(f"Snipppet with this name does not exist.", reference=ctx.message)
+        return await ctx.send(
+            f"Snipppet with this name does not exist.", reference=ctx.message
+        )
 
     @commands.Cog.listener()
     async def on_message(self, msg):
@@ -78,7 +88,7 @@ class Snippets(commands.Cog):
         if msg.guild.id != Guilds.cc:
             return
 
-        if not msg.content.startswith(';'):
+        if not msg.content.startswith(";"):
             return
 
         title = msg.content[1:].strip()
@@ -87,7 +97,7 @@ class Snippets(commands.Cog):
 
         # extract mentions and clean the command
         mentions_str = " ".join([m.mention for m in msg.mentions])
-        cmd = re.sub(r'<@(!?)([0-9]*)>', '', title).strip().lower()
+        cmd = re.sub(r"<@(!?)([0-9]*)>", "", title).strip().lower()
 
         # mongodb stuff
         snippet = await self.snippet_exists(cmd)
@@ -98,21 +108,25 @@ class Snippets(commands.Cog):
         on_cooldown = await self.is_on_snippet_cooldown(msg)
 
         if on_cooldown:
-            error_msg = f"Please wait {on_cooldown:.2f}s before using this command again."
+            error_msg = (
+                f"Please wait {on_cooldown:.2f}s before using this command again."
+            )
             return await msg.channel.send(error_msg, reference=msg, delete_after=10.0)
 
-        approved = snippet.get('approved', False)
-        title = snippet.get('title', None)
-        content = snippet.get('content', None)
-        footer = snippet.get('footer', None)
-        snippet_type = snippet.get('type', None)
+        approved = snippet.get("approved", False)
+        title = snippet.get("title", None)
+        content = snippet.get("content", None)
+        footer = snippet.get("footer", None)
+        snippet_type = snippet.get("type", None)
 
         if not approved:
-            return await msg.channel.send("This snippet is not approved yet.", reference=msg)
+            return await msg.channel.send(
+                "This snippet is not approved yet.", reference=msg
+            )
 
         embed = discord.Embed(color=discord.Color.red())
 
-        if snippet_type == 'link':
+        if snippet_type == "link":
             embed.set_image(url=content)
             embed.title = title if title else None
         else:
@@ -128,24 +142,26 @@ class Snippets(commands.Cog):
         await msg.channel.send(content=mentions_str, reference=ref, embed=embed)
 
         # increment uses by one
-        await self.bot.snippets.update_one({'name': cmd}, {'$inc': {'uses': 1}})
+        await self.bot.snippets.update_one({"name": cmd}, {"$inc": {"uses": 1}})
 
-    @commands.group(name='snippet', aliases=['s'], invoke_without_command=False)
+    @commands.group(name="snippet", aliases=["s"], invoke_without_command=False)
     async def snippet(self, ctx):
         pass
 
-    @snippet.command(name='add', aliases=['create'])
+    @snippet.command(name="add", aliases=["create"])
     async def snippet_add(self, ctx, name, *, content: Optional[str] = None):
         """Adds a snippet to the database."""
 
         # check if either the content is a text or there's an attachment
         if not content and not ctx.message.attachments:
-            return await ctx.send("Please add a text or an attachment.", reference=ctx.message)
+            return await ctx.send(
+                "Please add a text or an attachment.", reference=ctx.message
+            )
 
         attachments = ctx.message.attachments
         if attachments and content:
             name = f"{name} {content}"
-         # check if snippet already exists
+        # check if snippet already exists
 
         snippet = await self.snippet_exists(name)
 
@@ -156,41 +172,44 @@ class Snippets(commands.Cog):
         if attachments:
 
             # get the image file extension from the URL
-            ext = ctx.message.attachments[0].url.split('.')[-1]
+            ext = ctx.message.attachments[0].url.split(".")[-1]
 
             # create temp folder if it doesn't exist
-            if not os.path.exists('./temp'):
-                os.makedirs('./temp')
+            if not os.path.exists("./temp"):
+                os.makedirs("./temp")
 
-            await ctx.message.attachments[0].save(fp=f'./temp/{name}.{ext}')
-            storage_msg = await self.bot.get_channel(Channels.storage).send(file=discord.File(f'./temp/{name}.{ext}'))
+            await ctx.message.attachments[0].save(fp=f"./temp/{name}.{ext}")
+            storage_msg = await self.bot.get_channel(Channels.storage).send(
+                file=discord.File(f"./temp/{name}.{ext}")
+            )
             storage_id = storage_msg.attachments[0].id
 
             content = storage_msg.attachments[0].url
-            snippet_type = 'link'
+            snippet_type = "link"
 
         else:
             content = content.strip()
-            snippet_type = 'text'
+            snippet_type = "text"
             storage_id = None
 
         # add the snippet
-        await self.bot.snippets.insert_one({
-            'name': name.strip().lower(),
-            'type': snippet_type,
-            'content': content,
-            'approved': True,
-            'title': None,
-            'footer': None,
-            'created_at': datetime.datetime.utcnow(),
-            'owner_id': ctx.author.id,
-            'storage_id': storage_id
-
-        })
+        await self.bot.snippets.insert_one(
+            {
+                "name": name.strip().lower(),
+                "type": snippet_type,
+                "content": content,
+                "approved": True,
+                "title": None,
+                "footer": None,
+                "created_at": datetime.datetime.utcnow(),
+                "owner_id": ctx.author.id,
+                "storage_id": storage_id,
+            }
+        )
 
         await ctx.send("Snippet added successfully.", reference=ctx.message)
 
-    @snippet.command(name='info')
+    @snippet.command(name="info")
     async def snippet_info(self, ctx, *, name: str):
         """Shows information about a snippet."""
 
@@ -198,92 +217,109 @@ class Snippets(commands.Cog):
         if not snippet:
             raise SnippetDoesNotExist()
 
-        snippet_type = snippet.get('type', None)
+        snippet_type = snippet.get("type", None)
 
         embed = discord.Embed(color=discord.Color.red())
-        embed.title = snippet.get('name')
-        if snippet_type == 'link':
-            embed.set_image(url=snippet.get('content'))
+        embed.title = snippet.get("name")
+        if snippet_type == "link":
+            embed.set_image(url=snippet.get("content"))
         else:
-            embed.description = snippet.get('content')
+            embed.description = snippet.get("content")
 
         # get member
-        member = ctx.guild.get_member(snippet.get('owner_id'))
+        member = ctx.guild.get_member(snippet.get("owner_id"))
         if member:
-            embed.add_field(name='Owner', value=member.mention)
+            embed.add_field(name="Owner", value=member.mention)
         else:
-            embed.add_field(name='Owner', value=snippet.get('owner_id'))
+            embed.add_field(name="Owner", value=snippet.get("owner_id"))
 
         # uses
-        embed.add_field(name='Uses', value=snippet.get('uses', 0))
+        embed.add_field(name="Uses", value=snippet.get("uses", 0))
 
-        embed.add_field(name='Approved', value=snippet.get('approved'))
+        embed.add_field(name="Approved", value=snippet.get("approved"))
 
-        embed.add_field(name='Created at', value=snippet.get(
-            'created_at').strftime('%d/%m/%Y %H:%M:%S'))
+        embed.add_field(
+            name="Created at",
+            value=snippet.get("created_at").strftime("%d/%m/%Y %H:%M:%S"),
+        )
 
-        footer = snippet.get('footer', None)
+        footer = snippet.get("footer", None)
         if footer:
             embed.set_footer(text=footer)
 
         await ctx.send(embed=embed, reference=ctx.message)
 
-    @snippet.command(name='leaderboard')
+    @snippet.command(name="leaderboard")
     async def snippet_leaderboard(self, ctx):
         """Shows the snippet leaderboard."""
 
-        snippets = await self.bot.snippets.find({}).sort('uses', -1).limit(10).to_list(None)
+        snippets = (
+            await self.bot.snippets.find({}).sort("uses", -1).limit(10).to_list(None)
+        )
 
         embed = discord.Embed(color=discord.Color.red())
-        embed.title = 'Snippet leaderboard'
+        embed.title = "Snippet leaderboard"
 
         for i, snippet in enumerate(snippets):
-            embed.add_field(name=f'{i + 1}. {snippet.get("name")}',
-                            value=f"Uses: {snippet.get('uses', 0)}")
+            embed.add_field(
+                name=f'{i + 1}. {snippet.get("name")}',
+                value=f"Uses: {snippet.get('uses', 0)}",
+            )
 
         await ctx.send(embed=embed, reference=ctx.message)
 
-    @snippet.command(name="search", aliases=['find'])
+    @snippet.command(name="search", aliases=["find"])
     async def snippet_search(self, ctx, *, query: str):
         """Searches for a snippet."""
 
         # fuzzy search for the snippet
-        snippets = await self.bot.snippets.find({'name': {'$regex': query, '$options': 'i'}}).to_list(None)
+        snippets = await self.bot.snippets.find(
+            {"name": {"$regex": query, "$options": "i"}}
+        ).to_list(None)
 
         if not snippets:
             return await ctx.send("No snippets found.", reference=ctx.message)
 
         embed = discord.Embed(color=discord.Color.red())
-        embed.title = 'Search results'
+        embed.title = "Search results"
 
         # send top 10 results
         for i, snippet in enumerate(snippets[:10]):
-            embed.add_field(name=f'{i + 1}. {snippet.get("name")}',
-                            value=f"Uses: {snippet.get('uses', 0)}")
+            embed.add_field(
+                name=f'{i + 1}. {snippet.get("name")}',
+                value=f"Uses: {snippet.get('uses', 0)}",
+            )
 
         await ctx.send(embed=embed, reference=ctx.message)
 
-    @snippet.command(name='user')
+    @snippet.command(name="user")
     async def snippet_user(self, ctx, *, user: Union[discord.Member, discord.User]):
         """Shows a user's snippets."""
 
         # top 10 results
-        snippets = await self.bot.snippets.find({'owner_id': user.id}).sort('uses', -1).limit(10).to_list(None)
+        snippets = (
+            await self.bot.snippets.find({"owner_id": user.id})
+            .sort("uses", -1)
+            .limit(10)
+            .to_list(None)
+        )
 
         if not snippets:
             return await ctx.send("No snippets found.", reference=ctx.message)
 
         embed = discord.Embed(color=discord.Color.red())
-        embed.title = f'{user}\'s snippets'
+        embed.title = f"{user}'s snippets"
 
         for i, snippet in enumerate(snippets):
-            embed.add_field(name=f'{i + 1}. {snippet.get("name")}',
-                            value=f"Uses: {snippet.get('uses', 0)}")
+            embed.add_field(
+                name=f'{i + 1}. {snippet.get("name")}',
+                value=f"Uses: {snippet.get('uses', 0)}",
+            )
 
         await ctx.send(embed=embed, reference=ctx.message)
 
-    @snippet.command(name='approve')
-    @commands.has_any_role('Mod', 'Staff')
+    @snippet.command(name="approve")
+    @commands.has_any_role("Mod", "Staff")
     async def snippet_approve(self, ctx, *, name: str):
         """Approves a snippet."""
 
@@ -291,11 +327,11 @@ class Snippets(commands.Cog):
         if not snippet:
             raise SnippetDoesNotExist()
 
-        await self.bot.snippets.update_one({'name': name}, {'$set': {'approved': True}})
+        await self.bot.snippets.update_one({"name": name}, {"$set": {"approved": True}})
         await ctx.send("Snippet approved successfully.", reference=ctx.message)
 
-    @snippet.command(name='unapprove')
-    @commands.has_any_role('Mod', 'Staff')
+    @snippet.command(name="unapprove")
+    @commands.has_any_role("Mod", "Staff")
     async def snippet_unapprove(self, ctx, *, name: str):
         """Unapproves a snippet."""
 
@@ -303,11 +339,13 @@ class Snippets(commands.Cog):
         if not snippet:
             raise SnippetDoesNotExist()
 
-        await self.bot.snippets.update_one({'name': name}, {'$set': {'approved': False}})
+        await self.bot.snippets.update_one(
+            {"name": name}, {"$set": {"approved": False}}
+        )
         await ctx.send("Snippet unapproved successfully.", reference=ctx.message)
 
-    @snippet.command(name='delete', aliases=['remove'])
-    @commands.has_any_role('Mod', 'Staff')
+    @snippet.command(name="delete", aliases=["remove"])
+    @commands.has_any_role("Mod", "Staff")
     async def snippet_delete(self, ctx, *, name: str):
         """Deletes a snippet."""
 
@@ -315,7 +353,7 @@ class Snippets(commands.Cog):
         if not snippet:
             raise SnippetDoesNotExist()
 
-        await self.bot.snippets.delete_one({'name': name})
+        await self.bot.snippets.delete_one({"name": name})
         await ctx.send("Snippet deleted successfully.", reference=ctx.message)
 
 
