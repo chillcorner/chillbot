@@ -24,7 +24,7 @@ from bot.constants import Guilds, People, Roles
 
 
 MIN_LVL = 40
-HEX_PATTERN = re.compile(r"^#([0-9a-fA-F]{6})$")
+HEX_PATTERN = re.compile(r"^#?([0-9a-fA-F]{6})$")
 
 
 class CustomCheckFailure(app_commands.AppCommandError):
