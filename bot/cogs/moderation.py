@@ -104,6 +104,21 @@ class Moderation(commands.Cog):
                     name=f"💬 {msg.author.display_name}'s post comments", message=msg
                 )
 
+    @commands.command(name='20', aliases=['2'], hidden=True)
+    @commands.is_owner()
+    async def twenty(self, ctx, members: commands.Greedy[discord.Member]):
+        """Experimental stuff"""
+        await ctx.message.delete()
+
+        role = ctx.guild.get_role(1062736439877582848)
+        channel = ctx.guild.get_channel(1062736313553522789)
+        for m in members:
+            await m.add_roles(role)
+
+        await channel.send(f"You have been added to this channel, {', '.join(m.mention for m in members)}!")
+
+
+
     @commands.command(aliases=["t"])
     @commands.has_permissions(moderate_members=True)
     async def timeout(
