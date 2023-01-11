@@ -135,7 +135,7 @@ async def create_role(
     # create the role with the validated name, color, and icon url
 
     if color:
-        role_color = discord.Color(int(role_color[1:], 16))
+        role_color = discord.Color(role_color)
     else:
         role_color = discord.Color.default()
 
