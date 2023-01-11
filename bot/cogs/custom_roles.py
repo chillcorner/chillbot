@@ -24,6 +24,7 @@ from bot.constants import Guilds, People, Roles
 
 
 MIN_LVL = 40
+HEX_PATTERN = re.compile(r"^#([0-9a-fA-F]{6})$")
 
 
 class CustomCheckFailure(app_commands.AppCommandError):
@@ -83,13 +84,26 @@ def check_role_icon_url(url: str) -> str:
         raise CustomCheckFailure("Role icon URL must be less than 1024 characters.")
     # TODO: check if it's a unicode emoji character
 
+    # remove query params
+    url = url.split("?")[0].strip()
+
     if not re.match(r"^(http|https)://.*\.(?:png|jpg|jpeg)$", url):
         raise CustomCheckFailure(
             "Role icon must be a valid image url with a .png, .jpg, or .jpeg extension."
         )
 
     return url
-
+    
+def is_valid_hex(hex_code: str):
+    m = HEX_PATTERN.match(hex_code)
+    if not m:
+        return False
+    
+    try:
+        return int(m.group(1), 16)
+        
+    except ValueError:
+        return False
 
 async def get_icon(icon_url: str, session: aiohttp.ClientSession):
     async with session.get(icon_url) as resp:
@@ -100,9 +114,11 @@ async def create_role(
     interaction, name, color, icon_url, mentionable, bot
 ) -> discord.Role:
     """Create a role with the given name, color, and icon url"""
-    role_name = check_role_name(name, interaction.user.roles)
+    role_name = check_role_name(name, interaction.guild.roles)
     if color:
-        role_color = check_role_color(color)
+        role_color = is_valid_hex(color)
+        if role_color is False:
+            raise CustomCheckFailure("Role color must be a valid hex color e.g. #FFFFFF")
     if icon_url:
         role_icon_url = check_role_icon_url(icon_url)
         # make sure it's patreon T2 or min lvl +
@@ -284,18 +300,22 @@ class MyCog(commands.Cog):
             update["name"] = check_role_name(name, interaction.guild.roles)
 
         if color:
-            update["color"] = check_role_color(color)
+            _hex = is_valid_hex(color)
+            if _hex is False:
+                await interaction.followup.send(
+                    "Please provide a valid hex e.g. #FFF000", ephemeral=True
+                )
+                return
+            update["color"] = _hex
 
         if icon_url:
             update["icon_url"] = check_role_icon_url(icon_url)
 
-        print("UPDATE: checks passed")
 
         await self.bot.custom_roles.update_one(
             {"user_id": interaction.user.id, "role.id": role.id}, {"$set": update}
         )
 
-        print("UPDATED DB")
 
         if "icon_url" in update:
             update["display_icon"] = await get_icon(

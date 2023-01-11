@@ -8,10 +8,14 @@ config_test.yml
 /.git/
 test.py
 test/
-temp/
 
 .DS_Store
 .idea/
 
 .vscode/
 .mypy_cache/
+
+
+# test stuff
+temp/
+bot/cogs/modmail.py
