@@ -49,7 +49,7 @@ def has_required_level_or_patreon(interaction: discord.Interaction):
 
 
 def cooldown_check(interaction: discord.Interaction):
-    # owner only
+    """Owner bypasses cooldown"""
     if interaction.user.id == People.bharat:
         return None
 
@@ -367,84 +367,6 @@ class MyCog(commands.Cog):
         )
         await interaction.followup.send(f"Deleted your custom role", ephemeral=True)
 
-    @cr.command(name="status")
-    async def status(self, interaction: discord.Interaction) -> None:
-        """Check your custom role's status"""
-
-        await interaction.response.defer()
-
-        # get the role ID
-        document = await self.bot.custom_roles.find_one(
-            {"user_id": interaction.user.id}, {"role_id": 1}
-        )
-        if not document:
-            await interaction.followup.send(
-                "You don't have any custom role", ephemeral=True
-            )
-            return
-        role_id = document["role_id"]
-
-        # get the role object
-        role = interaction.guild.get_role(role_id)
-        if not role:
-            await interaction.followup.send(
-                "You don't have any custom role", ephemeral=True
-            )
-            return
-
-        # get the role's status
-        doc = await self.bot.custom_roles.find_one(
-            {"user_id": interaction.user.id},
-            {"name": 1, "color": 1, "icon_url": 1, "mentionable": 1},
-        )
-
-        if doc["color"]:
-            color = discord.Color(int(doc["color"][1:], 16))
-        else:
-            color = discord.Color.default()
-        embed = discord.Embed(color=color)
-        embed.set_author(
-            name=f"{interaction.user.display_name}'s custom role",
-            icon_url=str(interaction.user.display_avatar.url),
-        )
-        embed.add_field(name="Name", value=f"{role.mention}")
-        if doc["icon_url"]:
-            embed.set_thumbnail(url=doc["icon_url"])
-        embed.add_field(name="Mentionable", value=doc["mentionable"])
-
-        await interaction.followup.send(embed=embed, ephemeral=True)
-
-    @cr.command(name="mentionable")
-    @group_cooldown
-    async def mentionable(self, interaction: discord.Interaction) -> None:
-        """Toggle your custom role's mentionability"""
-
-        await interaction.response.defer()
-
-        doc = await self.bot.custom_roles.find_one(
-            {"user_id": interaction.user.id}, {"mentionable": 1, "role_id": 1}
-        )
-        is_mentionable = doc["mentionable"]
-
-        # edit the role
-        role_id = doc["role_id"]
-        role = interaction.guild.get_role(role_id)
-        if not role:
-            await interaction.followup.send("Role not found!", ephemeral=True)
-            return
-
-        await role.edit(mentionable=not is_mentionable)
-
-        await self.bot.custom_roles.update_one(
-            {"user_id": interaction.user.id},
-            {"$set": {"mentionable": not is_mentionable}},
-        )
-
-        clause = "un" if is_mentionable else ""
-        await interaction.followup.send(
-            f"Made role {clause}mentionable!", ephemeral=True
-        )
-
     @cr.command(name="slots")
     @app_commands.default_permissions(administrator=True)
     async def slots(self, interaction: discord.Interaction) -> None:
@@ -502,15 +424,8 @@ class MyCog(commands.Cog):
         elif isinstance(error, CustomCheckFailure):
             await interaction.followup.send(str(error), ephemeral=True)
 
-    @cr.error
-    async def on_cr_error(
-        interaction: discord.Interaction, error: app_commands.AppCommandError
-    ):
-        if isinstance(error, app_commands.CheckFailure):
-            pass
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        # TODO: catch checkFailure and handle it
         cmd = interaction.command
         if cmd.parent.name == "cr":
             if cmd.name == "patreon":
@@ -522,11 +437,11 @@ class MyCog(commands.Cog):
 
             if has_required_level_or_patreon(interaction):
                 return True
+
             await interaction.response.send_message(
                 f"You need to be level {MIN_LVL}+ or a patron to use this command",
                 ephemeral=True,
             )
-            return False
 
 
 async def setup(bot: commands.Bot) -> None:
