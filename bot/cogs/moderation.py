@@ -146,6 +146,15 @@ class Moderation(commands.Cog):
 
         await channel.send(f"Removed {len(removed)} member(s) from this channel!")
 
+    @ac.command(name='count')    
+    async def count_ac(self, ctx):
+        """Counts the number of members with the special access role."""
+        await ctx.message.delete()
+
+        role = ctx.guild.get_role(Roles.adults_access)        
+
+        await ctx.send(f"There are currently {len(role.members)} members in this channel!")
+
     @commands.command(aliases=["t"])
     @commands.has_permissions(moderate_members=True)
     async def timeout(
