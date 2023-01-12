@@ -14,6 +14,12 @@ IMAGE_LINK_REGEX = re.compile(
 )
 
 
+def ac_chat_only():
+    def predicate(ctx):
+        if ctx.channel.id == Channels.adults_chat:
+            return True
+
+
 async def apply_general_cooldown(msg):
 
     # ignore rate limits for mods
@@ -110,7 +116,7 @@ class Moderation(commands.Cog):
         """Commands for managing private channel access."""
         pass
 
-    @ac.command(name='add')
+    @ac.command(name="add")
     async def add_to_ac(self, ctx, members: commands.Greedy[discord.Member]):
         """Assigns the special role to the given members, allowing them to access the private channel."""
         await ctx.message.delete()
@@ -126,9 +132,11 @@ class Moderation(commands.Cog):
             await m.add_roles(role)
             assigned.append(m)
 
-        await channel.send(f"You have been added to this channel, {', '.join(m.mention for m in assigned)}!")
+        await channel.send(
+            f"You have been added to this channel, {', '.join(m.mention for m in assigned)}!"
+        )
 
-    @ac.command(name='remove')
+    @ac.command(name="remove")
     async def remove_from_ac(self, ctx, members: commands.Greedy[discord.Member]):
         """Removes the special role from the given members, removing their access to the private channel."""
         await ctx.message.delete()
@@ -146,14 +154,25 @@ class Moderation(commands.Cog):
 
         await channel.send(f"Removed {len(removed)} member(s) from this channel!")
 
-    @ac.command(name='count')    
+    @ac.command(name="count")
     async def count_ac(self, ctx):
         """Counts the number of members with the special access role."""
         await ctx.message.delete()
 
-        role = ctx.guild.get_role(Roles.adults_access)        
+        role = ctx.guild.get_role(Roles.adults_access)
 
-        await ctx.send(f"There are currently {len(role.members)} members in this channel!")
+        await ctx.send(
+            f"There are currently {len(role.members)} members in this channel!"
+        )
+
+    @ac.command(name="about")
+    async def about_ac(self, ctx):
+        """Gives a brief description of the channel and its purpose."""
+        await ctx.message.delete()
+
+        await ctx.send(
+            "This is not a channel for NSFW content. It is a private, experimental channel for adults over the age of 20 to discuss topics that are not relevant to the rest of the server members. If you ever feel like you don't fit in with the rest of the server, this is the place for you. The channel aims to create an inclusive and comfortable environment for adult individuals who feel excluded in the general channel due to factors such as age, topics, or content quality."
+        )
 
     @commands.command(aliases=["t"])
     @commands.has_permissions(moderate_members=True)

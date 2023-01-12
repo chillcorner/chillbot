@@ -93,17 +93,19 @@ def check_role_icon_url(url: str) -> str:
         )
 
     return url
-    
+
+
 def is_valid_hex(hex_code: str):
     m = HEX_PATTERN.match(hex_code)
     if not m:
         return False
-    
+
     try:
         return int(m.group(1), 16)
-        
+
     except ValueError:
         return False
+
 
 async def get_icon(icon_url: str, session: aiohttp.ClientSession):
     async with session.get(icon_url) as resp:
@@ -118,7 +120,9 @@ async def create_role(
     if color:
         role_color = is_valid_hex(color)
         if role_color is False:
-            raise CustomCheckFailure("Role color must be a valid hex color e.g. #FFFFFF")
+            raise CustomCheckFailure(
+                "Role color must be a valid hex color e.g. #FFFFFF"
+            )
     if icon_url:
         role_icon_url = check_role_icon_url(icon_url)
         # make sure it's patreon T2 or min lvl +
@@ -311,11 +315,9 @@ class MyCog(commands.Cog):
         if icon_url:
             update["icon_url"] = check_role_icon_url(icon_url)
 
-
         await self.bot.custom_roles.update_one(
             {"user_id": interaction.user.id, "role.id": role.id}, {"$set": update}
         )
-
 
         if "icon_url" in update:
             update["display_icon"] = await get_icon(
@@ -423,7 +425,6 @@ class MyCog(commands.Cog):
 
         elif isinstance(error, CustomCheckFailure):
             await interaction.followup.send(str(error), ephemeral=True)
-
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         cmd = interaction.command
