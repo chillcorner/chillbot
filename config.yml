@@ -28,6 +28,8 @@ channels:
 
   storage: 987603378907525120
 
+  adults_chat: 1062736313553522789
+
 roles:
   mod: 445407188375306243
   verified: 480030345916317746
@@ -38,6 +40,8 @@ roles:
   patreon_role_ids:
   - *PAT1
   - *PAT2
+
+  adults_access: 1062736439877582848
 
 people:
   bharat: &OWNER 982097011434201108

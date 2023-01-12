@@ -236,6 +236,7 @@ class Channels(metaclass=YAMLGetter):
     pets: int
 
     storage: int
+    adults_chat: int
 
 
 class Threads(metaclass=YAMLGetter):
@@ -260,6 +261,8 @@ class Roles(metaclass=YAMLGetter):
     patreon_t1: int
     patreon_t2: int
     patreon_role_ids: List[int]
+
+    adults_access: int
 
 
 class People(metaclass=YAMLGetter):

@@ -104,20 +104,47 @@ class Moderation(commands.Cog):
                     name=f"💬 {msg.author.display_name}'s post comments", message=msg
                 )
 
-    @commands.command(name='20', aliases=['2'], hidden=True)
+    @commands.group(invoke_without_command=False, hidden=True)
     @commands.is_owner()
-    async def twenty(self, ctx, members: commands.Greedy[discord.Member]):
-        """Experimental stuff"""
+    async def ac(self, ctx):
+        """Commands for managing private channel access."""
+        pass
+
+    @ac.command(name='add')
+    async def add_to_ac(self, ctx, members: commands.Greedy[discord.Member]):
+        """Assigns the special role to the given members, allowing them to access the private channel."""
         await ctx.message.delete()
 
-        role = ctx.guild.get_role(1062736439877582848)
-        channel = ctx.guild.get_channel(1062736313553522789)
+        role = ctx.guild.get_role(Roles.adults_access)
+        channel = ctx.guild.get_channel(Channels.adults_chat)
+
+        assigned = []
         for m in members:
+            if role in m.roles:
+                continue
+
             await m.add_roles(role)
+            assigned.append(m)
 
-        await channel.send(f"You have been added to this channel, {', '.join(m.mention for m in members)}!")
+        await channel.send(f"You have been added to this channel, {', '.join(m.mention for m in assigned)}!")
 
+    @ac.command(name='remove')
+    async def remove_from_ac(self, ctx, members: commands.Greedy[discord.Member]):
+        """Removes the special role from the given members, removing their access to the private channel."""
+        await ctx.message.delete()
 
+        role = ctx.guild.get_role(Roles.adults_access)
+        channel = ctx.guild.get_channel(Channels.adults_chat)
+
+        removed = []
+        for m in members:
+            if role not in m.roles:
+                continue
+
+            await m.remove_roles(role)
+            removed.append(m)
+
+        await channel.send(f"Removed {len(removed)} member(s) from this channel!")
 
     @commands.command(aliases=["t"])
     @commands.has_permissions(moderate_members=True)
