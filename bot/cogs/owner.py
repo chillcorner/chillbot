@@ -7,7 +7,6 @@ import sys
 from discord.ext import commands
 
 
-
 class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -17,13 +16,14 @@ class Owner(commands.Cog):
             process = await asyncio.create_subprocess_shell(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             result = await process.communicate()
         except NotImplementedError:
-            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(
+                command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             result = await self.bot.loop.run_in_executor(None, process.communicate)
 
         return [output.decode() for output in result]
 
     _GIT_PULL_REGEX = re.compile(r'\s*(?P<filename>.+?)\s*\|\s*[0-9]+\s*[+-]+')
-    
+
     def find_modules_from_git(self, output):
         files = self._GIT_PULL_REGEX.findall(output)
         ret = []
@@ -51,7 +51,7 @@ class Owner(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def pull(self, ctx):
+    async def pull(self, ctx):        
         """Pulls the latest changes from the repo."""
         async with ctx.typing():
             stdout, stderr = await self.run_process('git pull')
@@ -60,35 +60,62 @@ class Owner(commands.Cog):
         # however, things like "fast forward" and files
         # along with the text "already up-to-date" are in stdout
 
-        if stdout.startswith('Already up-to-date.'):
-            return await ctx.send(stdout)
+        async with ctx.typing():
+                stdout, stderr = await self.run_process('git pull')
 
-        modules = self.find_modules_from_git(stdout)        
+        # progress and stuff is redirected to stderr in git pull
+        # however, things like "fast forward" and files
+        # along with the text "already up-to-date" are in stdout
+
+        if 'Already up to date.' in stdout:
+            return await ctx.send(f"Already up to date.")
+
+        print(stdout)
+        print()
+
+        modules = self.find_modules_from_git(stdout)
+        # mods_text = '\n'.join(f'{index}. `{module}`' for index, (_, module) in enumerate(modules, start=1))
+
+        # prompt_text = f'This will update the following modules, are you sure?\n{mods_text}'
+        # confirm = await ctx.prompt(prompt_text, reacquire=False)
+        # if not confirm:
+        #     return await ctx.send('Aborting.')
+        print("Modules", modules)
 
         statuses = []
-        for is_submodule, module in modules:
-            if is_submodule:
+        agree = self.bot.cc_emoji('agree')
+        disagree = self.bot.cc_emoji('disagree')
+        cat_yes = self.bot.cc_emoji('cat_yes')
+
+        for is_module, module in modules:
+            if is_module == 1:
+                try:
+                    self.reload_or_load_extension(module)
+                    print(f"Reloaded a cog module: {module}")
+                except commands.ExtensionError:
+                    statuses.append((disagree, module))
+                else:
+                    statuses.append((agree, module))
+
+            else:
                 try:
                     actual_module = sys.modules[module]
                 except KeyError:
-                    statuses.append((ctx.tick(None), module))
+                    statuses.append((disagree, module))
                 else:
                     try:
                         importlib.reload(actual_module)
-                    except Exception as e:
-                        statuses.append((ctx.tick(False), module))
-                    else:
-                        statuses.append((ctx.tick(True), module))
-            else:
-                try:
-                    await self.reload_or_load_extension(module)
-                except commands.ExtensionError:
-                    statuses.append((ctx.tick(False), module))
-                else:
-                    statuses.append((ctx.tick(True), module))
 
-        _re_modules = '\n'.join(f'{status}: `{module}`' for status, module in statuses)
-        await ctx.send("Reloaded modules:\n" + _re_modules)
+                        print(f'Reloaded a non-cog module {actual_module}')
+                    except Exception as e:
+                        statuses.append((disagree, module))
+                        raise e
+                    else:
+                        statuses.append((agree, module))
+
+        modules_ = '\n'.join(
+            f'{status}: `{module}`' for status, module in statuses)
+        await ctx.send(f"Reloaded the following modules:\n{modules_}")
 
 
 
