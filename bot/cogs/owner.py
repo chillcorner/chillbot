@@ -52,7 +52,9 @@ class Owner(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def pull(self, ctx):        
-        """Pulls the latest changes from the repo."""     
+        """Pulls the latest changes from the repo.""" 
+
+        unused_var = 0
        
         async with ctx.typing():
             stdout, stderr = await self.run_process('git pull')
