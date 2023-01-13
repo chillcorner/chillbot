@@ -20,6 +20,7 @@ DEFAULT_COOLDOWN = CooldownMapping.from_cooldown(1, 20, BucketType.channel)
 
 
 class SnippetsGroup(app_commands.Group):
+    """Group to manage all snippet commands"""
     @app_commands.command(name="create", description="Create a new snippet")
     async def create(
         self, interaction: discord.Integration, name: str, *, content: str
