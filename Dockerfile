@@ -9,11 +9,11 @@ WORKDIR /bot
 
 # copy requirements.txt to working directory
 
-COPY requirements.txt ./
+COPY deps.txt ./
 
 # install dependencies
 
-RUN pip install -r requirements.txt
+RUN pip install -r deps.txt
 
 # copy all files to working directory
 
