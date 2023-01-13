@@ -1,8 +1,67 @@
+import asyncio
+import importlib
+import subprocess
+import sys
 from discord.ext import commands
+
+
 
 class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    async def run_process(self, command: str) -> list[str]:
+        try:
+            process = await asyncio.create_subprocess_shell(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            result = await process.communicate()
+        except NotImplementedError:
+            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            result = await self.bot.loop.run_in_executor(None, process.communicate)
+
+        return [output.decode() for output in result]
+
+    @commands.command()
+    @commands.is_owner()
+    async def pull(self, ctx):
+        """Pulls the latest changes from the repo."""
+        async with ctx.typing():
+            stdout, stderr = await self.run_process('git pull')
+
+        # progress and stuff is redirected to stderr in git pull
+        # however, things like "fast forward" and files
+        # along with the text "already up-to-date" are in stdout
+
+        if stdout.startswith('Already up-to-date.'):
+            return await ctx.send(stdout)
+
+        modules = self.find_modules_from_git(stdout)        
+
+        statuses = []
+        for is_submodule, module in modules:
+            if is_submodule:
+                try:
+                    actual_module = sys.modules[module]
+                except KeyError:
+                    statuses.append((ctx.tick(None), module))
+                else:
+                    try:
+                        importlib.reload(actual_module)
+                    except Exception as e:
+                        statuses.append((ctx.tick(False), module))
+                    else:
+                        statuses.append((ctx.tick(True), module))
+            else:
+                try:
+                    await self.reload_or_load_extension(module)
+                except commands.ExtensionError:
+                    statuses.append((ctx.tick(False), module))
+                else:
+                    statuses.append((ctx.tick(True), module))
+
+        await ctx.send('\n'.join(f'{status}: `{module}`' for status, module in statuses))
+
+
+
 
     @commands.command()
     @commands.is_owner()
