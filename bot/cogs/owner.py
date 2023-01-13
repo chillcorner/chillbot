@@ -80,9 +80,10 @@ class Owner(commands.Cog):
         print("Modules", modules)
 
         statuses = []
-        agree = self.bot.cc_emoji('agree')
-        disagree = self.bot.cc_emoji('disagree')
-        cat_yes = self.bot.cc_emoji('cat_yes')
+        agree = '\u2705'
+        disagree = '\u274c'
+        
+       
 
         for is_module, module in modules:
             if is_module == 1:
