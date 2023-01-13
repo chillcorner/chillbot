@@ -32,10 +32,10 @@ class Owner(commands.Cog):
             if ext != '.py':
                 continue
 
-            if root.startswith('cogs/'):
+            if root.startswith('bot/cogs/'):
                 # A submodule is a directory inside the main cog directory for
                 # my purposes
-                ret.append((root.count('/') - 1, root.replace('/', '.')))
+                ret.append((root.count('/') - 2, root.replace('/', '.')))
 
         # For reload order, the submodules should be reloaded first
         ret.sort(reverse=True)
