@@ -58,6 +58,7 @@ class Owner(commands.Cog):
        
         async with ctx.typing():
             stdout, stderr = await self.run_process('git pull')
+            print("stdout", stdout)
 
         # progress and stuff is redirected to stderr in git pull
         # however, things like "fast forward" and files
