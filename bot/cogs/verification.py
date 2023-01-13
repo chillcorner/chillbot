@@ -153,6 +153,7 @@ class VerificationView(discord.ui.View):
 
 
 class VerificationTypeView(discord.ui.View):
+    """View for choosing verification type (selfie or artwork)"""
     def __init__(self):
         super().__init__(timeout=None)
 
