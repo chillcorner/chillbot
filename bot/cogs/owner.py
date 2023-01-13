@@ -54,7 +54,7 @@ class Owner(commands.Cog):
     async def pull(self, ctx):        
         """Pulls the latest changes from the repo.""" 
 
-        unused_var = 0
+        unused_var = 25
        
         async with ctx.typing():
             stdout, stderr = await self.run_process('git pull')
