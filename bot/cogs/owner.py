@@ -98,7 +98,7 @@ class Owner(commands.Cog):
     async def load(self, ctx, *, module: str):
         """Loads a module."""
         try:
-            self.bot.load_extension(module)
+            await self.bot.load_extension(module)
         except Exception as e:
             await ctx.send(f'```py {type(e).__name__}: {e}```')
         else:
@@ -110,7 +110,7 @@ class Owner(commands.Cog):
     async def unload(self, ctx, *, module: str):
         """Unloads a module."""
         try:
-            self.bot.unload_extension(module)
+            await self.bot.unload_extension(module)
         except Exception as e:
             await ctx.send(f'```py {type(e).__name__}: {e}```')
         else:
@@ -122,7 +122,7 @@ class Owner(commands.Cog):
     async def reload(self, ctx, *, module: str):
         """Reloads a module."""
         try:
-            self.bot.reload_extension(module)
+            await self.bot.reload_extension(module)
         except Exception as e:
             await ctx.send(f'```py {type(e).__name__}: {e}```')
         else:
