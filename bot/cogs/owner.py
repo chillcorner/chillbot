@@ -52,16 +52,10 @@ class Owner(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def pull(self, ctx):        
-        """Pulls the latest changes from the repo."""
+        """Pulls the latest changes from the repo."""     
+       
         async with ctx.typing():
             stdout, stderr = await self.run_process('git pull')
-
-        # progress and stuff is redirected to stderr in git pull
-        # however, things like "fast forward" and files
-        # along with the text "already up-to-date" are in stdout
-
-        async with ctx.typing():
-                stdout, stderr = await self.run_process('git pull')
 
         # progress and stuff is redirected to stderr in git pull
         # however, things like "fast forward" and files
