@@ -30,6 +30,7 @@ bot_extensions = [
     "cogs.moderation",
     "cogs.snippets",
     "cogs.custom_roles",
+    "cogs.owner"
 ]
 
 # logging stuff
