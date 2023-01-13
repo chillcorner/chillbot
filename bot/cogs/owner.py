@@ -82,7 +82,14 @@ class Owner(commands.Cog):
         for is_module, module in modules:
             if is_module == 1:
                 try:
-                    self.reload_or_load_extension(module)
+                    # load or reload
+                    try:
+                        await self.bot.reload_extension(module)
+                    except commands.ExtensionNotLoaded:
+                        await self.bot.load_extension(module)
+
+                    except Exception as e:
+                        raise e
                     print(f"Reloaded a cog module: {module}")
                 except commands.ExtensionError:
                     statuses.append((disagree, module))
