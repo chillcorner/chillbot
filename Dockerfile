@@ -1,4 +1,7 @@
 
+# use python 3.10.8
+
+FROM python:3.10.8
 
 # set working directory
 
