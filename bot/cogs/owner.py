@@ -24,18 +24,26 @@ class Owner(commands.Cog):
 
     _GIT_PULL_REGEX = re.compile(r'\s*(?P<filename>.+?)\s*\|\s*[0-9]+\s*[+-]+')
     
-    def find_modules_from_git(self, output: str) -> list[tuple[int, str]]:
+    def find_modules_from_git(self, output):
         files = self._GIT_PULL_REGEX.findall(output)
-        ret: list[tuple[int, str]] = []
+        ret = []
         for file in files:
             root, ext = os.path.splitext(file)
             if ext != '.py':
                 continue
 
-            if root.startswith('bot/cogs/'):
+            if root.startswith('bot/'):
                 # A submodule is a directory inside the main cog directory for
-                # my purposes
-                ret.append((root.count('/') - 2, root.replace('/', '.')))
+                # my purposes.
+                dir_count = root.count('/')
+                if dir_count == 2 and "/cogs" in root:
+                    _ret = 1
+                elif dir_count - 1 == 0:
+                    _ret = 0
+
+                else:
+                    _ret = 0
+                ret.append((_ret, root.replace('/', '.')))
 
         # For reload order, the submodules should be reloaded first
         ret.sort(reverse=True)
@@ -79,7 +87,8 @@ class Owner(commands.Cog):
                 else:
                     statuses.append((ctx.tick(True), module))
 
-        await ctx.send('\n'.join(f'{status}: `{module}`' for status, module in statuses))
+        _re_modules = '\n'.join(f'{status}: `{module}`' for status, module in statuses)
+        await ctx.send("Reloaded modules:\n" + _re_modules)
 
 
 
