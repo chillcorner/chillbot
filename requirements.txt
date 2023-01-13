@@ -1,7 +1,0 @@
-asyncio==3.4.3
-discord.py
-PyYAML==6.0
-parsedatetime
-asyncpg
-motor
-aiohttp
