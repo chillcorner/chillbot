@@ -1,11 +1,6 @@
 # Chill Bot
 
-It was originally called "Chill Corner" bot just like any generic branded custom bot. It had basic moderation, fun and utlity commands that helped run our server. Many members of our community prefer to call it "Chill bot" so I renamed it accordingly.
-
-It always used to be a private bot and I could never make it open-source due to ugly and unreadable code that had more runtime errors than comments. Now I'm starting over from the scratch and making it open source mainly for accountablity and contribution reasons.
-
-I plan to make this bot public one day or at least some parts of it. It's still a private bot with custom functionalities suited to only our server but I may include some features that can be used by other server owners.
-
+This bot was previously private and poorly coded, but it is now being rebuilt from scratch as an open-source project for the purpose of accountability and contribution.
 
 # Running your own instance
 You can currently add this bot to your server but it's recommended to run your own instance.
