@@ -21,6 +21,7 @@ class Onboarding(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        return
         if member.guild.id != Guilds.cc:
             return
 
