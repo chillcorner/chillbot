@@ -26,11 +26,11 @@ intents.presences = True
 bot_extensions = [
     "cogs.onboarding",
     # "cogs.openai",
-    "cogs.verification",
-    "cogs.moderation",
+    # "cogs.verification",
+    # "cogs.moderation",
     "cogs.snippets",
     "cogs.custom_roles",
-    "cogs.owner"
+    "cogs.owner",
 ]
 
 # logging stuff

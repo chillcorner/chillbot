@@ -141,7 +141,7 @@ async def create_role(
     if color:
         role_color = discord.Color(role_color)
     else:
-        role_color = discord.Color.default() # default color
+        role_color = discord.Color.default()  # default color
 
     if icon_url:
         try:
