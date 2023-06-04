@@ -5,4 +5,4 @@ parsedatetime
 asyncpg
 motor
 aiohttp
-python-dateutil=2.8.2
+python-dateutil==2.8.2
