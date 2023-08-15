@@ -23,9 +23,12 @@ class Fun(commands.Cog):
                 try:
                     await after.send(f"You aren't allowed to change your nickname.")
                 except Exception as e:
-                    print(e)
-                await after.edit(nick=fixed_nick)
-
+                    raise e
+                
+                try:
+                    await after.edit(nick=fixed_nick)
+                except Exception as e:
+                    raise e
 
 async def setup(bot):
     await bot.add_cog(Fun(bot))
