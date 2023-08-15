@@ -45,7 +45,7 @@ class Fun(commands.Cog):
             return
 
         # Fetch the last 25 messages
-        messages = await ctx.channel.history(limit=25).flatten()
+        messages = [msg async for msg in ctx.channel.history(limit=25)]
 
         # Get unique authors (excluding the bot)
         authors = list(
