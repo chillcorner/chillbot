@@ -16,7 +16,7 @@ class Fun(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_member_update(before, after):
+    async def on_member_update(self, before, after):
         if after.id in fixed_nicks:
             fixed_nick = fixed_nicks.get(after.id)
             if not after.display_name.lower().startswith(fixed_nick.lower()):
