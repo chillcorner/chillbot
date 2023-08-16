@@ -4,6 +4,7 @@ import json
 import logging
 import sys
 import traceback
+from dotenv import load_dotenv
 
 import aiohttp
 import discord
@@ -13,6 +14,8 @@ from motor import motor_asyncio
 
 from bot.constants import Bot, Database
 from bot.exceptions import SnippetDoesNotExist, SnippetExists
+
+load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
