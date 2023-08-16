@@ -16,10 +16,6 @@ from motor import motor_asyncio
 from bot.constants import Bot, Database
 from bot.exceptions import SnippetDoesNotExist, SnippetExists
 
-# load env
-current_dir = Path(__file__).parent
-load_dotenv(dotenv_path=current_dir.parent / '.env')
-
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
