@@ -5,6 +5,7 @@ import logging
 import sys
 import traceback
 from dotenv import load_dotenv
+from pathlib import Path
 
 import aiohttp
 import discord
@@ -15,7 +16,9 @@ from motor import motor_asyncio
 from bot.constants import Bot, Database
 from bot.exceptions import SnippetDoesNotExist, SnippetExists
 
-load_dotenv()
+# load env
+current_dir = Path(__file__).parent
+load_dotenv(dotenv_path=current_dir.parent / '.env')
 
 intents = discord.Intents.default()
 intents.message_content = True
