@@ -184,8 +184,7 @@ async def create_role(
 
 
 blacklisted_users = [
-    999177926903869520, #himby
-    982097011434201108, #test2
+    999177926903869520, #himby #test2
 ]
 
 
@@ -200,8 +199,6 @@ class MyCog(commands.Cog):
 
     # async def cog_check(self, ctx) -> bool:
     #     return ctx.user.id == 982097011434201108
-
-    
 
     @commands.command(name="sync")
     @commands.is_owner()
