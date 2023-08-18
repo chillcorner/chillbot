@@ -210,7 +210,7 @@ class MyCog(commands.Cog):
 
     #cr = app_commands.Group(name="cr", description="Custom roles related commands")
 
-    @app_command.group(name="cr", description="Custom roles related commands")
+    @app_commands.group(name="cr", description="Custom roles related commands")
     @commands.checks(is_not_blacklisted)
     async def cr(self, ctx: Context) -> None:
         pass
