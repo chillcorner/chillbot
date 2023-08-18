@@ -458,6 +458,17 @@ class MyCog(commands.Cog):
                 ephemeral=True,
             )
 
+@is_not_blacklisted.error
+async def blacklist_error(
+    interaction: Interaction,
+    error: app_commands.AppCommandError
+):
+    if isinstance(error, app_commands.CheckFailure):
+        await interaction.response.send_message(f"{interaction.user} you are not allowed to perform this action.", ephemeral=True)
+        return
+
+    raise error
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(MyCog(bot), guilds=[discord.Object(id=Guilds.cc)])
