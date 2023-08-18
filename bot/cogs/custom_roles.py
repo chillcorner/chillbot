@@ -188,10 +188,7 @@ blacklisted_users = [
     982097011434201108, #test2
 ]
 
-def is_not_blacklisted():
-    def _check(interaction: Interaction):
-        return interaction.user.id not in blacklisted_users
-    return app_commands.check(_check)
+
 
 
 class MyCog(commands.Cog):
@@ -201,6 +198,12 @@ class MyCog(commands.Cog):
 
     # async def cog_check(self, ctx) -> bool:
     #     return ctx.user.id == 982097011434201108
+
+    @staticmethod
+    def is_not_blacklisted():
+        def _check(interaction: Interaction):
+            return interaction.user.id not in blacklisted_users
+        return app_commands.check(_check)
 
     @commands.command(name="sync")
     @commands.is_owner()
