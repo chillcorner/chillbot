@@ -183,6 +183,15 @@ async def create_role(
     return role
 
 
+blacklisted_users = [
+    999177926903869520, #himby
+    982097011434201108, #test2
+]
+
+def is_not_blacklisted(ctx):
+    return ctx.author.id not in BLACKLISTED_USERS
+
+
 class MyCog(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
@@ -199,7 +208,12 @@ class MyCog(commands.Cog):
         await ctx.bot.tree.sync(guild=ctx.guild)
         await ctx.send("Synced slash commands.")
 
-    cr = app_commands.Group(name="cr", description="Custom roles related commands")
+    #cr = app_commands.Group(name="cr", description="Custom roles related commands")
+
+    @app_command.group(name="cr", description="Custom roles related commands")
+    @commands.checks(is_not_blacklisted)
+    async def cr(self, ctx: Context) -> None:
+        pass
 
     group_cooldown = app_commands.checks.dynamic_cooldown(cooldown_check)
 
