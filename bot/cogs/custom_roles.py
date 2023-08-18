@@ -208,17 +208,13 @@ class MyCog(commands.Cog):
         await ctx.bot.tree.sync(guild=ctx.guild)
         await ctx.send("Synced slash commands.")
 
-    #cr = app_commands.Group(name="cr", description="Custom roles related commands")
-
-    @app_commands.Group(name="cr", description="Custom roles related commands")
-    @commands.check(is_not_blacklisted)
-    async def cr(self, ctx: Context) -> None:
-        pass
-
+    cr = app_commands.Group(name="cr", description="Custom roles related commands")
     group_cooldown = app_commands.checks.dynamic_cooldown(cooldown_check)
+    no_blacklist = app_commands.checks.dynamic_check(is_not_blacklisted)
 
     @cr.command(name="create")
     @group_cooldown
+    @no_blacklist
     @app_commands.describe(
         name="Your role name",
         color="Your role color in hex",
@@ -267,6 +263,7 @@ class MyCog(commands.Cog):
 
     @cr.command(name="update")
     @group_cooldown
+    @no_blacklist
     @app_commands.describe(
         name="Your new role name",
         color="Your new role color hex",
@@ -350,6 +347,7 @@ class MyCog(commands.Cog):
         await interaction.followup.send("Updated your custom role!", ephemeral=True)
 
     @cr.command(name="delete")
+    @no_blacklist
     async def delete(self, interaction: discord.Interaction) -> None:
         """Delete your custom role"""
 
