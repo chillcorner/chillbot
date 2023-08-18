@@ -8,7 +8,7 @@ import aiohttp
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord.ext.commands import Context, Greedy
+from discord.ext.commands import Context, Greedy, checks
 
 from bot.constants import Guilds, People, Roles
 
@@ -211,7 +211,7 @@ class MyCog(commands.Cog):
     #cr = app_commands.Group(name="cr", description="Custom roles related commands")
 
     @app_commands.Group(name="cr", description="Custom roles related commands")
-    @commands.checks(is_not_blacklisted)
+    @commands.check(is_not_blacklisted)
     async def cr(self, ctx: Context) -> None:
         pass
 
