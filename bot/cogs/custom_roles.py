@@ -210,7 +210,7 @@ class MyCog(commands.Cog):
 
     cr = app_commands.Group(name="cr", description="Custom roles related commands")
     group_cooldown = app_commands.checks.dynamic_cooldown(cooldown_check)
-    no_blacklist = app_commands.checks(is_not_blacklisted)
+    no_blacklist = commands.check(is_not_blacklisted)
 
     @cr.command(name="create")
     @group_cooldown
