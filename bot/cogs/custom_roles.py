@@ -8,7 +8,7 @@ import aiohttp
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord.ext.commands import Context, Greedy, checks
+from discord.ext.commands import Context, Greedy
 
 from bot.constants import Guilds, People, Roles
 
