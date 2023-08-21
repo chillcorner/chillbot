@@ -184,7 +184,7 @@ async def create_role(
 
 
 blacklisted_users = [
-    999177926903869520, #himby #test2
+    # 999177926903869520, #himby 
 ]
 
 

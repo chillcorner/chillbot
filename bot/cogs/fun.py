@@ -2,6 +2,7 @@ import re
 from typing import Optional
 import random
 import asyncio 
+import time
 
 import discord
 from discord.ext import commands
@@ -16,6 +17,8 @@ fixed_nicks = {999177926903869520: "killjoy", 982097011434201108: "bharat"}
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.last_kill
+
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
