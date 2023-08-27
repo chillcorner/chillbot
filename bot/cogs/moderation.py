@@ -22,7 +22,7 @@ def ac_chat_only():
 
 async def apply_general_cooldown(msg):
     # ignore rate limits for mods
-    if Roles.moderators in [r.id for r in msg.author.roles]:
+    if Roles.mod in [r.id for r in msg.author.roles]:
         return
 
     bucket = DEFAULT_COOLDOWN.get_bucket(msg)
