@@ -21,7 +21,6 @@ def ac_chat_only():
 
 
 async def apply_general_cooldown(msg):
-
     # ignore rate limits for mods
     if Roles.moderators in [r.id for r in msg.author.roles]:
         return
@@ -43,10 +42,15 @@ async def delete_videos_in_general(msg):
         return
 
     if msg.attachments:
-        return
-
-    if msg.content.startswith("https://"):
-        await msg.delete()
+        for attachment in msg.attachments:
+            if attachment.filename.endswith(".mp4"):
+                try:
+                    await msg.delete()
+                    # await msg.author.send(
+                    #     "Please do not post videos in the general channel."
+                    # )
+                except discord.HTTPException:
+                    pass
 
 
 async def handle_media_only_channel_content(msg):
@@ -97,6 +101,7 @@ class Moderation(commands.Cog):
 
         # check for cooldown
         if msg.channel.id == Channels.general:
+            await delete_videos_in_general(msg)
             # check if msg has attachments or contains image link
             if msg.attachments or IMAGE_LINK_REGEX.search(msg.content):
                 await apply_general_cooldown(msg)
@@ -110,70 +115,7 @@ class Moderation(commands.Cog):
                     name=f"💬 {msg.author.display_name}'s post comments", message=msg
                 )
 
-    @commands.group(invoke_without_command=False, hidden=True)
-    @commands.is_owner()
-    async def ac(self, ctx):
-        """Commands for managing private channel access."""
-        pass
-
-    @ac.command(name="add")
-    async def add_to_ac(self, ctx, members: commands.Greedy[discord.Member]):
-        """Assigns the special role to the given members, allowing them to access the private channel."""
-        await ctx.message.delete()
-
-        role = ctx.guild.get_role(Roles.adults_access)
-        channel = ctx.guild.get_channel(Channels.adults_chat)
-
-        assigned = []
-        for m in members:
-            if role in m.roles:
-                continue
-
-            await m.add_roles(role)
-            assigned.append(m)
-
-        await channel.send(
-            f"You have been added to this channel, {', '.join(m.mention for m in assigned)}!"
-        )
-
-    @ac.command(name="remove")
-    async def remove_from_ac(self, ctx, members: commands.Greedy[discord.Member]):
-        """Removes the special role from the given members, removing their access to the private channel."""
-        await ctx.message.delete()
-
-        role = ctx.guild.get_role(Roles.adults_access)
-        channel = ctx.guild.get_channel(Channels.adults_chat)
-
-        removed = []
-        for m in members:
-            if role not in m.roles:
-                continue
-
-            await m.remove_roles(role)
-            removed.append(m)
-
-        await channel.send(f"Removed {len(removed)} member(s) from this channel!")
-
-    @ac.command(name="count")
-    async def count_ac(self, ctx):
-        """Counts the number of members with the special access role."""
-        await ctx.message.delete()
-
-        role = ctx.guild.get_role(Roles.adults_access)
-
-        await ctx.send(
-            f"There are currently {len(role.members)} members in this channel!"
-        )
-
-    @ac.command(name="about")
-    async def about_ac(self, ctx):
-        """Gives a brief description of the channel and its purpose."""
-        await ctx.message.delete()
-
-        await ctx.send(
-            "This is not a channel for NSFW content. It is a private, experimental channel for adults over the age of 20 to discuss topics that are not relevant to the rest of the server members. If you ever feel like you don't fit in with the rest of the server, this is the place for you. The channel aims to create an inclusive and comfortable environment for adult individuals who feel excluded in the general channel due to factors such as age, topics, or content quality."
-        )
-
+    
     @commands.command(aliases=["t"])
     @commands.has_permissions(moderate_members=True)
     async def timeout(

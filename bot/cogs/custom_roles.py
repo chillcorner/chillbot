@@ -213,7 +213,6 @@ class MyCog(commands.Cog):
 
     @cr.command(name="create")
     @group_cooldown
-    @app_commands.check(is_not_blacklisted)
     @app_commands.describe(
         name="Your role name",
         color="Your role color in hex",
@@ -262,7 +261,6 @@ class MyCog(commands.Cog):
 
     @cr.command(name="update")
     @group_cooldown
-    @app_commands.check(is_not_blacklisted)
     @app_commands.describe(
         name="Your new role name",
         color="Your new role color hex",
@@ -346,7 +344,6 @@ class MyCog(commands.Cog):
         await interaction.followup.send("Updated your custom role!", ephemeral=True)
 
     @cr.command(name="delete")
-    @app_commands.check(is_not_blacklisted)
     async def delete(self, interaction: discord.Interaction) -> None:
         """Delete your custom role"""
 

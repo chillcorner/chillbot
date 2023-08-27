@@ -29,11 +29,11 @@ bot_extensions = [
     "cogs.onboarding",
     # "cogs.openai",
     # "cogs.verification",
-    # "cogs.moderation",
+    "cogs.moderation",
     "cogs.snippets",
     "cogs.custom_roles",
     "cogs.owner",
-    "cogs.fun",
+    #"cogs.fun",
 ]
 
 # logging stuff
