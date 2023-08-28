@@ -184,7 +184,7 @@ async def create_role(
 
 
 blacklisted_users = [
-    # 999177926903869520, #himby 
+    # 999177926903869520, #himby
 ]
 
 
@@ -451,7 +451,6 @@ class MyCog(commands.Cog):
                 f"You need to be level {MIN_LVL}+ or a patron to use this command",
                 ephemeral=True,
             )
-
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -115,7 +115,6 @@ class Moderation(commands.Cog):
                     name=f"💬 {msg.author.display_name}'s post", message=msg
                 )
 
-    
     @commands.command(aliases=["t"])
     @commands.has_permissions(moderate_members=True)
     async def timeout(

@@ -33,7 +33,7 @@ bot_extensions = [
     "cogs.snippets",
     "cogs.custom_roles",
     "cogs.owner",
-    #"cogs.fun",
+    # "cogs.fun",
 ]
 
 # logging stuff

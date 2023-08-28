@@ -1,7 +1,7 @@
 import re
 from typing import Optional
 import random
-import asyncio 
+import asyncio
 import time
 
 import discord
@@ -18,7 +18,6 @@ class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.last_kill
-
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
