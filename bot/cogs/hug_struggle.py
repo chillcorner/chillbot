@@ -14,7 +14,7 @@ class LockChannelCog(commands.Cog):
     async def on_message(self, message):
         if (
             str(self.lock_emoji_id) in message.content
-            and message.author == self.bot.owner
+            and message.author.id == 982097011434201108
         ):
             await message.channel.set_permissions(
                 message.guild.default_role, send_messages=False
