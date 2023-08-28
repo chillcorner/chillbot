@@ -19,7 +19,7 @@ class LockChannelCog(commands.Cog):
             await message.channel.set_permissions(
                 message.guild.default_role, send_messages=False
             )
-            self.locked_channels[message.channel.id] = 0
+            self.locked_channels[message.channel.id] = message.id
             lock_emoji = self.bot.get_emoji(self.lock_emoji_id)
             target_emoji = self.bot.get_emoji(self.target_emoji_id)
             await message.add_reaction(target_emoji)
@@ -35,11 +35,12 @@ class LockChannelCog(commands.Cog):
             payload.emoji.id == self.target_emoji_id
             and payload.channel_id in self.locked_channels
         ):
+
             channel = self.bot.get_channel(payload.channel_id)
             if not channel:
                 return
 
-            message = await channel.fetch_message(payload.message_id)
+            message = await channel.fetch_message(self.locked_channels[channel.id])
             if not message:
                 return
 
