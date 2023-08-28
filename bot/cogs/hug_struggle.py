@@ -7,7 +7,7 @@ class LockChannelCog(commands.Cog):
         self.bot = bot
         self.lock_emoji_id = 1062941796881154128
         self.target_emoji_id = 564512560355737600
-        self.target_count = 3
+        self.target_count = 5
         self.locked_channels = {}
 
     @commands.Cog.listener()
