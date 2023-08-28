@@ -32,7 +32,7 @@ bot_extensions = [
     "cogs.moderation",
     "cogs.snippets",
     "cogs.custom_roles",
-    "cogs.hug_struggle",
+   # "cogs.hug_struggle",
     "cogs.owner",
     # "cogs.fun",
 ]
