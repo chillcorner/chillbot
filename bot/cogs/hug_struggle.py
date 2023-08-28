@@ -25,8 +25,8 @@ class LockChannelCog(commands.Cog):
             await message.add_reaction(target_emoji)
 
             msg = await message.channel.send(
-                f"Channel has been locked! Add {self.target_count} {target_emoji} reactions to unlock.",
-                delete_after=10,
+                f"||Channel has been locked! Add {self.target_count} {target_emoji} reactions to unlock.||",
+                delete_after=100,
             )
 
     @commands.Cog.listener()
