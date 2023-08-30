@@ -45,7 +45,7 @@ class Fun(commands.Cog):
             print(e)
 
     # every 2 mins change role color
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=5)
     async def change_role_color(self):
         guild = self.bot.get_guild(444470893599784960)
         role = guild.get_role(1146271394280255498)
