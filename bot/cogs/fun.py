@@ -40,7 +40,7 @@ class Fun(commands.Cog):
                 if r.status == 200:
                     img_bytes = await r.read()
                     file = discord.File(BytesIO(img_bytes), filename="cat.png")
-                    await msg.channel.send(file=file, reference=msg, mention_author=True, content="Hi")
+                    await msg.channel.send(file=file, reference=msg, mention_author=True, content="Hi", delete_after=6)
         except discord.HTTPException as e:
             print(e)
 
