@@ -14,8 +14,8 @@ IMAGE_LINK_REGEX = re.compile(
 )
 
 # VC COOLDOWN
-VC_MEMBER_COOLDOWN = CooldownMapping.from_cooldown(1, 60, BucketType.member)
-VC_CHANNEL_COOLDOWN = CooldownMapping.from_cooldown(2, 60, BucketType.channel)
+VC_MEMBER_COOLDOWN = CooldownMapping.from_cooldown(2, 120, BucketType.member)
+VC_CHANNEL_COOLDOWN = CooldownMapping.from_cooldown(4, 120, BucketType.channel)
 
 
 def ac_chat_only():
