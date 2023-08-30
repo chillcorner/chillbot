@@ -53,7 +53,8 @@ class LockChannelCog(commands.Cog):
             if reactions:
                 if reactions[0].count > self.target_count:
                     await channel.set_permissions(
-                        channel.guild.default_role, send_messages=True,
+                        channel.guild.default_role,
+                        send_messages=True,
                         embed_links=False,
                         attach_files=False,
                     )

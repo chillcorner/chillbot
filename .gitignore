@@ -8,6 +8,7 @@ config_test.yml
 /.git/
 test.py
 test/
+tests/
 
 .DS_Store
 .idea/

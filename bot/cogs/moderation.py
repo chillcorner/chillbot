@@ -13,6 +13,10 @@ IMAGE_LINK_REGEX = re.compile(
     r"(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|svg)", re.IGNORECASE
 )
 
+# VC COOLDOWN
+VC_MEMBER_COOLDOWN = CooldownMapping.from_cooldown(1, 60, BucketType.member)
+VC_CHANNEL_COOLDOWN = CooldownMapping.from_cooldown(2, 60, BucketType.channel)
+
 
 def ac_chat_only():
     def predicate(ctx):
@@ -114,6 +118,40 @@ class Moderation(commands.Cog):
                 await msg.channel.create_thread(
                     name=f"💬 {msg.author.display_name}'s post", message=msg
                 )
+
+        if msg.attachments:
+            await self.handle_voice_messages_rate_limits(msg)
+
+    async def handle_voice_messages_rate_limits(self, msg):
+        attachment = msg.attachments[0]
+        voice_msg = attachment.is_voice_message()
+        if not voice_msg:
+            return
+
+        # check if user is on cooldown
+        bucket = VC_MEMBER_COOLDOWN.get_bucket(msg)
+        retry_after = bucket.update_rate_limit()
+        if retry_after:
+            try:
+                await msg.delete()
+                await msg.author.send(
+                    f"Please wait {retry_after:.2f}s before posting another voice message."
+                )
+            except discord.HTTPException:
+                pass
+
+        # check if channel is on cooldown
+        bucket = VC_CHANNEL_COOLDOWN.get_bucket(msg.channel)
+        retry_after = bucket.update_rate_limit()
+
+        if retry_after:
+            try:
+                await msg.delete()
+                await msg.author.send(
+                    f"Please wait {retry_after:.2f}s before posting another voice message in {msg.channel.mention}."
+                )
+            except discord.HTTPException:
+                pass
 
     @commands.command(aliases=["t"])
     @commands.has_permissions(moderate_members=True)
