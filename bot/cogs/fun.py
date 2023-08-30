@@ -5,6 +5,7 @@ import asyncio
 import time
 from io import BytesIO
 
+
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import BucketType, CommandOnCooldown, CooldownMapping
@@ -33,6 +34,13 @@ class Fun(commands.Cog):
             await msg.author.add_roles(role)
             cat_emoji = self.bot.get_emoji(564512595445284875)
             await msg.add_reaction(cat_emoji)
+
+            # get random cat from https://cataas.com/cat and send it
+            async with self.bot.session.get("https://cataas.com/cat") as r:
+                if r.status == 200:
+                    img_bytes = await r.read()
+                    file = discord.File(BytesIO(img_bytes), filename="cat.png")
+                    await msg.channel.send(file=file, reference=msg, mention_author=True, content="Hi")
         except discord.HTTPException as e:
             print(e)
 
