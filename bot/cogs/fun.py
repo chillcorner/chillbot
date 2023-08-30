@@ -18,6 +18,9 @@ class Fun(commands.Cog):
         self.bot = bot
         self.change_role_color.start()
 
+    async def on_cog_unload(self):
+        self.change_role_color.cancel()
+
     @commands.Cog.listener()
     async def on_message(self, msg):
         if msg.author.bot:
