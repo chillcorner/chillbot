@@ -55,7 +55,7 @@ class Fun(commands.Cog):
 
         cat_emoji = random.choice(cat_emojis)
 
-        img_bytes = await cat_emoji.url.read()
+        img_bytes = await cat_emoji.read()
 
         await role.edit(color=random.choice(colors), display_icon=img_bytes)
 
