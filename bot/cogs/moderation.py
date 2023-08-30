@@ -141,7 +141,7 @@ class Moderation(commands.Cog):
                 pass
 
         # check if channel is on cooldown
-        bucket = VC_CHANNEL_COOLDOWN.get_bucket(msg.channel)
+        bucket = VC_CHANNEL_COOLDOWN.get_bucket(msg)
         retry_after = bucket.update_rate_limit()
 
         if retry_after:
