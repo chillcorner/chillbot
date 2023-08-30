@@ -51,7 +51,7 @@ class Fun(commands.Cog):
         ]
 
         # change role image to random cat emoji image
-        cat_emojis = [e for e in self.bot.emojis if "cat" in e.name]
+        cat_emojis = [e for e in guild.emojis if "cat" in e.name]
 
         cat_emoji = random.choice(cat_emojis)
 
