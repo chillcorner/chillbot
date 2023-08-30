@@ -39,7 +39,8 @@ class Fun(commands.Cog):
             await msg.add_reaction(cat_emoji)
 
             # get random cat from https://cataas.com/cat and send it
-            async with self.bot.session.get("https://cataas.com/cat") as r:
+            nick = msg.author.display_name
+            async with self.bot.session.get(f"https://cataas.com/cat/cute/says/Hello {nick}") as r:
                 if r.status == 200:
                     img_bytes = await r.read()
                     file = discord.File(BytesIO(img_bytes), filename="cat.png")
