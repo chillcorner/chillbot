@@ -52,6 +52,8 @@ def is_booster(i: discord.Interaction):
         if r.id == 585702348773392389:
             return True
 
+            print('booster true for ', i.user.name)
+
     return False
 
 
