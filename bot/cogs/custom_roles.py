@@ -79,6 +79,14 @@ def check_role_name(name: str, roles: List[discord.Role]) -> str:
         raise CustomCheckFailure("Role name must be unique and not already in use.")
     return name
 
+def check_role_name_edit(name:str, role: discord.Role, roles: List[discord.Role]) -> str:
+    if len(name) > 32:
+        raise CustomCheckFailure("Role names must be less than 32 characters.")
+    roles = [r for r in roles if r.id != role.id]
+
+    if name.lower() in [role.name.lower() for role in roles]:
+        raise CustomCheckFailure("Role name must be unique and not already in use.")
+    return name
 
 def check_role_color(color: str) -> str:
     if len(color) > 7:
@@ -318,7 +326,7 @@ class MyCog(commands.Cog):
 
         if name:
             # ok
-            update["name"] = check_role_name(name, interaction.guild.roles)
+            update["name"] = check_role_name_edit(name, role, interaction.guild.roles)
 
         if color:
             _hex = is_valid_hex(color)
