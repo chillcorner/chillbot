@@ -453,6 +453,9 @@ class MyCog(commands.Cog):
             if any(r.id == Roles.mod for r in interaction.user.roles):
                 return True
 
+            if is_booster(interaction):
+                return True
+
             if has_required_level_or_patreon(interaction):
                 return True
 
