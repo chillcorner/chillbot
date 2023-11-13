@@ -47,6 +47,13 @@ def has_required_level_or_patreon(interaction: discord.Interaction):
 
     return has_required_level(interaction)
 
+def is_booster(i: discord.Interaction):
+    for r in i.user.roles:
+        if r.id == 585702348773392389:
+            return True
+
+    return False
+
 
 def cooldown_check(interaction: discord.Interaction):
     """Owner bypasses cooldown"""
@@ -126,7 +133,7 @@ async def create_role(
     if icon_url:
         role_icon_url = check_role_icon_url(icon_url)
         # make sure it's patreon T2 or min lvl +
-        if not (is_patreon_t2(interaction) or has_required_level(interaction)):
+        if not (is_patreon_t2(interaction) or has_required_level(interaction) or is_booster(interaction)):
             await interaction.followup.send(
                 f"You must be a Patreon T2 or level {MIN_LVL}+ to use custom role icons.",
                 ephemeral=True,
