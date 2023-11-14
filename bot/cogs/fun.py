@@ -27,7 +27,6 @@ SWITCHABLE_ROLES = {
         "mentionable": False,
         "icon": "https://cdn.discordapp.com/role-icons/1173340939654287491/236b588ddef1bcdeaf4f99c4ad35e193.png",
     },
-
 }
 
 
@@ -38,6 +37,7 @@ async def get_icon_bytes(icon_url: str) -> Optional[bytes]:
                 return None
             return await resp.read()
 
+
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -45,7 +45,6 @@ class Fun(commands.Cog):
 
     async def on_cog_unload(self):
         self.switch_roles_task.cancel()
-       
 
     @commands.Cog.listener()
     async def on_message(self, msg):
@@ -55,18 +54,13 @@ class Fun(commands.Cog):
         if not msg.guild:
             return
 
-        
-
-    # every 2 mins change role color
     @tasks.loop
     async def switch_roles(self):
         guild = self.bot.get_guild(444470893599784960)
         role = guild.get_role(1173340939654287491)
 
         member = guild.get_member(1081727262191276044)
-        
-        # give one of the SWITCHABLE_ROLES to a member sequentially every 5 mins
-        # and rename based on SWITCHABLE_ROLES
+
         while True:
             for role_name, role_data in SWITCHABLE_ROLES.items():
                 # edit role
@@ -82,9 +76,6 @@ class Fun(commands.Cog):
                 # sleep for 2 mins
                 await asyncio.sleep(60 * 2)
 
-
-
-        
 
 async def setup(bot):
     await bot.add_cog(Fun(bot))

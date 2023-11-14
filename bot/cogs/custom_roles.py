@@ -47,12 +47,13 @@ def has_required_level_or_patreon(interaction: discord.Interaction):
 
     return has_required_level(interaction)
 
+
 def is_booster(i: discord.Interaction):
     for r in i.user.roles:
         if r.id == 585702348773392389:
             return True
 
-            print('booster true for ', i.user.name)
+            print("booster true for ", i.user.name)
 
     return False
 
@@ -79,7 +80,10 @@ def check_role_name(name: str, roles: List[discord.Role]) -> str:
         raise CustomCheckFailure("Role name must be unique and not already in use.")
     return name
 
-def check_role_name_edit(name:str, role: discord.Role, roles: List[discord.Role]) -> str:
+
+def check_role_name_edit(
+    name: str, role: discord.Role, roles: List[discord.Role]
+) -> str:
     if len(name) > 32:
         raise CustomCheckFailure("Role names must be less than 32 characters.")
     roles = [r for r in roles if r.id != role.id]
@@ -87,6 +91,7 @@ def check_role_name_edit(name:str, role: discord.Role, roles: List[discord.Role]
     if name.lower() in [role.name.lower() for role in roles]:
         raise CustomCheckFailure("Role name must be unique and not already in use.")
     return name
+
 
 def check_role_color(color: str) -> str:
     if len(color) > 7:
@@ -143,7 +148,11 @@ async def create_role(
     if icon_url:
         role_icon_url = check_role_icon_url(icon_url)
         # make sure it's patreon T2 or min lvl +
-        if not (is_patreon_t2(interaction) or has_required_level(interaction) or is_booster(interaction)):
+        if not (
+            is_patreon_t2(interaction)
+            or has_required_level(interaction)
+            or is_booster(interaction)
+        ):
             await interaction.followup.send(
                 f"You must be a Patreon T2 or level {MIN_LVL}+ to use custom role icons.",
                 ephemeral=True,
