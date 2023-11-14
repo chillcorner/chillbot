@@ -25,7 +25,7 @@ SWITCHABLE_ROLES = {
         "color": discord.Color.from_rgb(112, 0, 193),
         "hoist": False,
         "mentionable": False,
-        "icon": "https://cdn.discordapp.com/role-icons/1173340939654287491/236b588ddef1bcdeaf4f99c4ad35e193.png",
+        "icon": "https://i.imgur.com/ckHRw7v.png",
     },
 }
 
