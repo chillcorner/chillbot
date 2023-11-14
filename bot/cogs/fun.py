@@ -70,7 +70,7 @@ class Fun(commands.Cog):
                     color=role_data["color"],
                     hoist=role_data["hoist"],
                     mentionable=role_data["mentionable"],
-                    icon=icon_bytes,
+                    display_icon=icon_bytes,
                 )
 
                 # sleep for 2 mins
