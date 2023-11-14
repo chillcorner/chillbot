@@ -54,7 +54,7 @@ class Fun(commands.Cog):
         if not msg.guild:
             return
 
-    @tasks.loop
+    @tasks.loop(hours=2)
     async def switch_roles(self):
         guild = self.bot.get_guild(444470893599784960)
         role = guild.get_role(1173340939654287491)
