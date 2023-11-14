@@ -57,9 +57,11 @@ class Fun(commands.Cog):
     @tasks.loop(hours=2)
     async def switch_roles(self):
         guild = self.bot.get_guild(444470893599784960)
-        role = guild.get_role(1173340939654287491)
+        role = guild.get_role(1173808544437510216)
 
         member = guild.get_member(1081727262191276044)
+        if not member:
+            return
 
         while True:
             for role_name, role_data in SWITCHABLE_ROLES.items():
