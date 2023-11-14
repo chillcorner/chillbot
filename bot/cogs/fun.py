@@ -75,6 +75,9 @@ class Fun(commands.Cog):
                     display_icon=icon_bytes,
                 )
 
+                # assign
+                await member.add_roles(role)
+
                 # sleep for 2 mins
                 await asyncio.sleep(60 * 2)
 
