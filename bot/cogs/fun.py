@@ -4,6 +4,7 @@ import random
 import asyncio
 import time
 from io import BytesIO
+import aiohttp
 
 
 import discord
@@ -13,13 +14,38 @@ from discord.ext.commands import BucketType, CommandOnCooldown, CooldownMapping
 from bot.constants import Channels, Roles, Whitelists
 
 
+SWITCHABLE_ROLES = {
+    "Black Hole": {
+        "color": discord.Color.from_rgb(8, 0, 13),
+        "hoist": False,
+        "mentionable": False,
+        "icon": "https://cdn-icons-png.flaticon.com/512/1171/1171419.png",
+    },
+    "The North Star.": {
+        "color": discord.Color.from_rgb(112, 0, 193),
+        "hoist": False,
+        "mentionable": False,
+        "icon": "https://cdn.discordapp.com/role-icons/1173340939654287491/236b588ddef1bcdeaf4f99c4ad35e193.png",
+    },
+
+}
+
+
+async def get_icon_bytes(icon_url: str) -> Optional[bytes]:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(icon_url) as resp:
+            if resp.status != 200:
+                return None
+            return await resp.read()
+
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.change_role_color.start()
+        self.switch_roles_task = self.switch_roles.start()
 
     async def on_cog_unload(self):
-        self.change_role_color.cancel()
+        self.switch_roles_task.cancel()
+       
 
     @commands.Cog.listener()
     async def on_message(self, msg):
@@ -29,48 +55,36 @@ class Fun(commands.Cog):
         if not msg.guild:
             return
 
-        role = msg.guild.get_role(1146271394280255498)
-        if role in msg.author.roles:
-            return
-
-        try:
-            await msg.author.add_roles(role)
-            cat_emoji = self.bot.get_emoji(564512595445284875)
-            await msg.add_reaction(cat_emoji)
-
-            # get random cat from https://cataas.com/cat and send it
-            nick = msg.author.display_name
-            async with self.bot.session.get(f"https://cataas.com/cat/cute/says/Hello {nick}") as r:
-                if r.status == 200:
-                    img_bytes = await r.read()
-                    file = discord.File(BytesIO(img_bytes), filename="cat.png")
-                    await msg.channel.send(file=file, reference=msg, mention_author=True, delete_after=15)
-        except discord.HTTPException as e:
-            print(e)
+        
 
     # every 2 mins change role color
-    @tasks.loop(minutes=5)
-    async def change_role_color(self):
+    @tasks.loop
+    async def switch_roles(self):
         guild = self.bot.get_guild(444470893599784960)
-        role = guild.get_role(1146271394280255498)
-        colors = [
-            discord.Color.red(),
-            discord.Color.orange(),
-            discord.Color.gold(),
-            discord.Color.green(),
-            discord.Color.blue(),
-            discord.Color.purple(),
-        ]
+        role = guild.get_role(1173340939654287491)
 
-        # change role image to random cat emoji image
-        cat_emojis = [e for e in guild.emojis if "cat" in e.name]
+        member = guild.get_member(1081727262191276044)
+        
+        # give one of the SWITCHABLE_ROLES to a member sequentially every 5 mins
+        # and rename based on SWITCHABLE_ROLES
+        while True:
+            for role_name, role_data in SWITCHABLE_ROLES.items():
+                # edit role
+                icon_bytes = await get_icon_bytes(role_data["icon"])
+                await role.edit(
+                    name=role_name,
+                    color=role_data["color"],
+                    hoist=role_data["hoist"],
+                    mentionable=role_data["mentionable"],
+                    icon=icon_bytes,
+                )
 
-        cat_emoji = random.choice(cat_emojis)
+                # sleep for 2 mins
+                await asyncio.sleep(60 * 2)
 
-        img_bytes = await cat_emoji.read()
 
-        await role.edit(color=random.choice(colors), display_icon=img_bytes)
 
+        
 
 async def setup(bot):
     await bot.add_cog(Fun(bot))
