@@ -10,6 +10,8 @@ out in the custom user configuration will stay
 their default values from `config-default.yml`.
 """
 
+
+
 import logging
 import os
 from collections.abc import Mapping
@@ -18,6 +20,9 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import yaml
+from dotenv import load_dotenv
+
+load_dotenv()
 
 log = logging.getLogger(__name__)
 

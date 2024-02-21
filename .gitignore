@@ -16,6 +16,8 @@ tests/
 .vscode/
 .mypy_cache/
 
+.env
+.env.test
 
 # test stuff
 temp/
